@@ -1,0 +1,478 @@
+body {
+    font-family: monospace;
+    margin: 0;
+    padding: 0;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 5px;
+}
+
+.chat * {
+
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    /* overflow-y: auto; */
+
+}
+
+.chat input,
+.chat textarea,
+.chat label {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+
+
+
+
+
+.settings,
+.settings * {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    box-sizing: border-box;
+    margin: 0px;
+}
+
+
+
+/* .message {
+    background-color: #403f3f;
+    color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+} */
+
+/* make CSS for message class 
+it should have padding on one side. 
+Each message should have the padding on the left or right side such that each alternating
+message has the padding on the left or right side.
+The first message should have padding on the left side.
+The second message should have padding on the right side.
+*/
+
+.message {
+    background-color: #403f3f;
+    color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.message:nth-child(odd) {
+    padding-left: 20px;
+    margin-left: 10px;
+}
+
+.message:nth-child(even) {
+    padding-right: 20px;
+    margin-right: 10px;
+
+    background-color: rgb(94, 5, 70);
+}
+
+
+
+
+
+
+
+
+
+
+.conversation {
+    display: block;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.top-area {
+    position: absolute;
+    top: 0;
+    height: calc(100% - 200px);
+    width: 100%;
+
+
+    box-sizing: border-box;
+    overflow-y: scroll;
+}
+
+.bottom-area {
+    position: absolute;
+    bottom: 0;
+    height: 200px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: rgba(30, 30, 30, 0.9);
+    border-top: 1px solid #444;
+    z-index: 1000;
+}
+
+.message-input {
+    width: 100%;
+    height: 100px;
+    resize: none;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+
+    background-color: #1e1e1e;
+    color: #eee;
+    margin-bottom: 10px;
+}
+
+.send-button {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.controls-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    height: 40px;
+    overflow: hidden;
+}
+
+.model-selector {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 100%;
+    height: 100%;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    color: #eee;
+    cursor: pointer;
+}
+
+
+.settings-button {
+    width: 50px;
+    height: 100%;
+    flex-shrink: 0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #3a3a3a;
+    color: #eee;
+    cursor: pointer;
+}
+
+
+
+body,
+html,
+.container,
+.panel,
+.tab-bar,
+.editor-container,
+.iframe-toolbar,
+
+.tab-button,
+.project-dialog,
+.project-item,
+.project-delete,
+.dialog-close,
+.resize-bar-col,
+.resize-bar-row,
+.dialog {
+    box-sizing: border-box;
+}
+
+.container {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    background: #1e1e1e;
+    color: #ccc;
+    overflow: hidden;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-panel {
+    width: 20%;
+    min-width: 100px;
+    border-right: 1px solid #333;
+}
+
+.editor-panel {
+    width: 40%;
+    min-width: 100px;
+    border-right: 1px solid #333;
+}
+
+.tab-bar {
+    display: flex;
+    background: #2d2d2d;
+    flex-shrink: 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 10px;
+    margin: 1px;
+    color: #ccc;
+    border: none;
+    cursor: pointer;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background: #444;
+}
+
+.tab-button.active {
+    background: blue;
+    color: #fff;
+}
+
+.tab-button:hover:not(.active) {
+    background: #333;
+}
+
+.editor-container {
+    flex: 1;
+}
+
+.iframe-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 3px;
+    background: #2d2d2d;
+    color: #fff;
+    align-items: center;
+    font-size: 14px;
+    height: 33px;
+}
+
+.iframe-toolbar input {
+    flex: 1;
+    background: #444;
+    color: #fff;
+    border: 1px solid #666;
+    padding: 4px;
+}
+
+.iframe-toolbar button {
+    background: #555;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 6px 10px;
+}
+
+
+
+.resize-bar-col {
+    width: 5px;
+    background: #444;
+    cursor: col-resize;
+    user-select: none;
+    z-index: 10000;
+}
+
+.resize-bar-row {
+    height: 5px;
+    background: #444;
+    cursor: row-resize;
+    user-select: none;
+    z-index: 10000;
+}
+
+.dialog {
+    position: absolute;
+    background: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10000;
+    width: 200px;
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    left: 10px;
+    top: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #666;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.dialog-close {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 0px 5px;
+}
+
+.project-item {
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project-delete {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 0px 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* stuff related to markdown rendering */
+
+
+
+pre {
+    background: #2e2e2e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    
+    margin-top: 1.5rem;
+}
+
+.code-buttons {
+    position: relative;
+    top: 0rem;
+    right: 0.5rem;
+    display: flex;
+    justify-content: right;
+    gap: 0.3rem;
+}
+
+
+
+code {
+    background: #000000;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
+    color: #eee;
+    font-family: monospace;
+    max-width: 100%; 
+    overflow-x:scroll;
+    /* display: inline-block; */
+    box-sizing: border-box;
+    margin: 5px;
+    padding: 5px;
+    white-space: pre;
+    overflow: auto;
+    overflow-y:scroll;
+}
+
+
+
+
+
+
+
+
+
+
+/* Basic markdown formatting */
+.rendered-markdown {
+  /* font-size: 1rem; */
+}
+
+.rendered-markdown h1,
+.rendered-markdown h2,
+.rendered-markdown h3 {
+  color: #fff;
+  margin-top: 1.5rem;
+}
+
+.rendered-markdown ul,
+.rendered-markdown ol {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+}
+
+.rendered-markdown li {
+  margin-bottom: 0.4rem;
+}
+
+.rendered-markdown blockquote {
+  border-left: 4px solid #888;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #aaa;
+  font-style: italic;
+}
+
+.rendered-markdown code {
+  background: #2a2a2a;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+}
+
+.rendered-markdown pre {
+  margin-top: 1rem;
+}
+
+/* Tables */
+.rendered-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.rendered-markdown th,
+.rendered-markdown td {
+  border: 1px solid #555;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.rendered-markdown th {
+  background: #333;
+}
+
+.rendered-markdown tr:nth-child(even) {
+  background: #2a2a2a;
+}

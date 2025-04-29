@@ -1,0 +1,58 @@
+{
+  "name": "ai-fiddle",
+  "version": "1.0.0",
+  "description": "AI assisted codeing environment similar to JSFiddle",
+  "scripts": {
+    "dev": "npx parcel src/index.html  --no-hmr ",
+    "build": "npx parcel build src/index.html --no-source-maps --public-url ."
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@parcel/config-default": "^2.14.4",
+    "escodegen": "^2.1.0",
+    "esprima-next": "^6.0.3",
+    "estraverse": "^5.3.0",
+    "highlight.js": "^11.11.1",
+    "js-beautify": "^1.15.4",
+    "linkedom": "^0.18.9",
+    "marked": "^15.0.10",
+    "monaco-editor": "^0.52.2",
+    "openai": "^4.95.1",
+    "parcel": "^2.14.4"
+  },
+  "keywords": [
+    "light-mode",
+    "dark-mode",
+    "parcel",
+    "web-development"
+  ],
+  "type": "module",
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com:mmiscool/aiFiddle.git"
+  },
+  "bugs": {
+    "url": "https://github.com:mmiscool/aiFiddle/issues"
+  },
+  "homepage": "https://github.com:mmiscool/aiFiddle#readme",
+  "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.14.4",
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "events": "^3.3.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "string_decoder": "^1.3.0",
+    "url": "^0.11.4",
+    "util": "^0.12.5",
+    "vm-browserify": "^1.1.2"
+  }
+}
