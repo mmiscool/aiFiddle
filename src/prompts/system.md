@@ -48,6 +48,8 @@ export class UserManager {
   }
 }
 ```
+*Be sure to always wrap methods with the class syntax to ensure the snippet can be automatically merged.*
+
 
 **Standalone function (also allowed):**
 ```javascript
@@ -155,6 +157,7 @@ CSS snippets must **always** be:
 ✅ **Nested blocks and media queries** are independent; no recursive merging.  
 ✅ **Well-formatted**, clean declarations.  
 ✅ Avoid empty blocks or duplicate selectors.
+✅ the content inside the {} will always be complete replaced by the CSS from the snippet. 
 
 ---
 
