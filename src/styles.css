@@ -395,15 +395,12 @@ code {
     border-radius: 0.3rem;
     color: #eee;
     font-family: monospace;
-    max-width: 100%; 
-    overflow-x:scroll;
-    /* display: inline-block; */
     box-sizing: border-box;
     margin: 5px;
     padding: 5px;
     white-space: pre;
-    overflow: auto;
-    overflow-y:scroll;
+    overflow-x:scroll;
+    width:100%;
 }
 
 
@@ -415,10 +412,7 @@ code {
 
 
 
-/* Basic markdown formatting */
-.rendered-markdown {
-  /* font-size: 1rem; */
-}
+
 
 .rendered-markdown h1,
 .rendered-markdown h2,

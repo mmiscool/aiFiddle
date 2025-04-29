@@ -271,6 +271,11 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             //settingDiv.className = "setting";
             const label = document.createElement("label");
             label.innerText = setting.name;
+            // replace "llmConfig/" with "" in the label
+            label.innerText = label.innerText.replace("llmConfig/", "");
+            label.innerText = label.innerText.replace(".txt", "");
+            label.style.width = "100%";
+            label.style.marginTop = "10px";
 
             let input = document.createElement("input");
             // check if the name contains the word prompt. If it is a prompt then create a textarea
