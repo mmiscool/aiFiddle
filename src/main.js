@@ -30,14 +30,16 @@ class aiFiddleEditor {
             name: '',
             conversations: []
         };
-        this.iframe = document.createElement('iframe');
-        this.consolePanel = document.createElement('div');
+
         this.startupActions();
     }
 
     async startupActions() {
         await this.readURLParams();
         if (this.mode === 'run') return;
+
+        this.iframe = document.createElement('iframe');
+        this.consolePanel = document.createElement('div');
 
         await this.setupLayout();
         await this.setupMessageListener();
@@ -52,7 +54,7 @@ class aiFiddleEditor {
             this.mode = 'editor';
             await this.decodeProject(params.get('editor'));
             console.log('Loading project:', this.project);
-            this.saveProjectToStorage();
+            await this.saveProjectToStorage();
         } else if (await params.has('run')) {
             this.mode = 'run';
             await this.decodeProject(params.get('run'));
@@ -374,8 +376,28 @@ class aiFiddleEditor {
     }
 
     setupMessageListener() {
-        window.addEventListener('message', (e) => {
-            //console.log('Message from iframe:', e.data);
+        window.addEventListener('message', async (e) => {
+            console.log('e.data type:', typeof e.data, Array.isArray(e.data));
+            console.log('e.data:', e.data);
+
+            const errorData = e.data?.data;
+            console.log('errorData:', errorData);
+
+
+            let filteredErrorString="";
+            for (let key in errorData) {
+                console.log(errorData[key]);
+                // check if the value starts with blob:
+                if ((errorData[key] +"").startsWith('blob:')) {
+                    console.log('Ignoring blob URL:', errorData[key]);
+                    continue;
+                }
+                filteredErrorString += errorData[key] + "  ";
+
+            }
+
+            //console.log(JSON.stringify(e.data, null, 2));
+
             if (e.data?.type === 'iframe-console') {
                 const msg = document.createElement('div');
                 // set the color of the message based on the type
@@ -398,7 +420,30 @@ class aiFiddleEditor {
 
                 // add a 1px border to the message
                 msg.style.border = '1px solid #333';
-                msg.textContent = e.data.data.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+
+                // Prepare the message text
+                //const messageText = e.data.data.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+
+                const messageText = filteredErrorString;
+                msg.textContent = messageText;
+
+                // Create the alert button
+                const alertBtn = document.createElement('button');
+                alertBtn.textContent = '🔍';
+                alertBtn.title = 'Show full message';
+                alertBtn.style.marginLeft = '8px';
+                alertBtn.style.background = 'none';
+                alertBtn.style.border = 'none';
+                alertBtn.style.color = '#fff';
+                alertBtn.style.cursor = 'pointer';
+                alertBtn.onclick = (ev) => {
+                    ev.stopPropagation();
+                    this.chatUI.appendMesaageInput(messageText);
+                };
+
+                // Add the button to the message div
+                msg.appendChild(alertBtn);
+
                 this.consolePanel.appendChild(msg);
                 this.consolePanel.scrollTop = this.consolePanel.scrollHeight;
             }
@@ -566,67 +611,70 @@ class aiFiddleEditor {
     async generatePageContent(hijackDebugger = true) {
         let returnString = "";
 
+        let JSurlBlob = createModuleBlobURL(this.project.js + "\n\n//# sourceURL=injectedScript.js", 'application/javascript');
+        let CSSurlBlob = createModuleBlobURL(this.project.css, 'text/css');
+
         if (hijackDebugger) {
             returnString = `
-                <html>
-                    <script>
+        <html>
+            <head>
+                <meta name="color-scheme" content="light dark">
+                <link rel="stylesheet" href="${CSSurlBlob}">
+            </head>
+
+            <body>
+                ${this.project.html}
+
+                <script>
                     (function () {
                         const oldLog = console.log;
                         console.log = function (...args) {
-                        window.parent.postMessage({ type: 'iframe-console', data: ['log', ...args] }, '*');
-                        oldLog.apply(console, args);
+                            window.parent.postMessage({ type: 'iframe-console', data: ['log', ...args] }, '*');
+                            oldLog.apply(console, args);
                         };
-
                         const oldError = console.error;
                         console.error = function (...args) {
-                        window.parent.postMessage({ type: 'iframe-console', data: ['error', ...args] }, '*');
-                        oldError.apply(console, args);
-                        }
+                            window.parent.postMessage({ type: 'iframe-console', data: ['error', ...args] }, '*');
+                            oldError.apply(console, args);
+                        };
                         const oldWarn = console.warn;
                         console.warn = function (...args) {
-                        window.parent.postMessage({ type: 'iframe-console', data: ['warn', ...args] }, '*');
-                        oldWarn.apply(console, args);
-                        }
+                            window.parent.postMessage({ type: 'iframe-console', data: ['warn', ...args] }, '*');
+                            oldWarn.apply(console, args);
+                        };
                         const oldDebug = console.debug;
                         console.debug = function (...args) {
-                        window.parent.postMessage({ type: 'iframe-console', data: ['debug', ...args] }, '*');
-                        oldDebug.apply(console, args);
-                        }
+                            window.parent.postMessage({ type: 'iframe-console', data: ['debug', ...args] }, '*');
+                            oldDebug.apply(console, args);
+                        };
                         const oldInfo = console.info;
                         console.info = function (...args) {
-                        window.parent.postMessage({ type: 'iframe-console', data: ['info', ...args] }, '*');
-                        oldInfo.apply(console, args);
-                        }
-
+                            window.parent.postMessage({ type: 'iframe-console', data: ['info', ...args] }, '*');
+                            oldInfo.apply(console, args);
+                        };
 
                         window.addEventListener('error', function (event) {
-                        window.parent.postMessage({
-                            type: 'iframe-console',
-                            data: ['error', event.message, event.filename, event.lineno, event.colno, event.error?.stack]
-                        }, '*');
+                            window.parent.postMessage({
+                                type: 'iframe-console',
+                                data: ['error', event.message, event.filename, event.lineno, event.colno, event.error?.stack]
+                            }, '*');
                         });
 
                         window.addEventListener('unhandledrejection', function (event) {
-                        window.parent.postMessage({
-                            type: 'iframe-console',
-                            data: ['error', event.reason?.message || event.reason, event.reason?.stack]
-                        }, '*');
+                            window.parent.postMessage({
+                                type: 'iframe-console',
+                                data: ['error', event.reason?.message || event.reason, event.reason?.stack]
+                            }, '*');
                         });
-
-
-
                     })();
-                    </script>
+                </script>
 
+                <script type="module" src="${JSurlBlob}"></script>
+            </body>
+        </html>`;
+        }
 
-                    <head>
-                        <meta name="color-scheme" content="light dark">   
-                        <style>${this.project.css}</style>
-                        
-                    </head>
-                    <body>${this.project.html}<script type=module>${this.project.js}</script></body>
-                </html>`;
-        } else {
+        else {
             returnString = `
                 <html>
                     <head>
@@ -709,6 +757,19 @@ window.addEventListener('unhandledrejection', (event) => {
     }
     // Otherwise, let it happen normally
 });
+
+export function createModuleBlobURL(code, type) {
+    const blob = new Blob([code], { type });
+    const url = URL.createObjectURL(blob);
+    return url;
+}
+
+
+
+
+
+
+
 
 
 // Instantiate the class

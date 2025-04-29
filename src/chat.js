@@ -37,7 +37,7 @@ export class ChatUI extends conversation {
         if (await readSetting(`prompts/system.md`) !== system_prompt) {
             const answer = await confirm("You have either customized your prompt or the default prompt has changed.\n Would you like to updated to the latest default prompt?")
             if (answer) writeSetting(`prompts/system.md`, system_prompt)
-        
+
         }
 
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
@@ -49,7 +49,12 @@ export class ChatUI extends conversation {
         return true;
     }
 
-
+    async setMesaageInput(message) {
+        this.messageInput.value = message;
+    }
+    async appendMesaageInput(message) {
+        this.messageInput.value += message;
+    }
 
     async setupSystemPrompts() {
         await this.addMessage({ role: "system", content: await readSetting(`prompts/system.md`), hidden: true, temp: false });
