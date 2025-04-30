@@ -1,8 +1,21 @@
 self.require = self.require || {};
 self.require.toUrl = (uri) => uri;
-// THIS MUST BE GLOBAL (not scoped to a class)
 self.MonacoEnvironment = {
-    getWorker: (_moduleId, label) => getMonacoWorker(label),
+    getWorkerUrl: function (moduleId, label) {
+        if (label === 'json') {
+            return './json.worker.js';
+        }
+        if (label === 'css' || label === 'scss' || label === 'less') {
+            return './css.worker.js';
+        }
+        if (label === 'html' || label === 'handlebars' || label === 'razor') {
+            return './html.worker.js';
+        }
+        if (label === 'typescript' || label === 'javascript') {
+            return './ts.worker.js';
+        }
+        return './editor.worker.js';
+    }
 };
 
 
@@ -82,7 +95,10 @@ class aiFiddleEditor {
             return div;
         };
 
-        this.chatUI = new ChatUI(this);
+        this.chatUI = await new ChatUI(this);
+
+        //await this.chatUI.setup();
+
 
         this.chatPanel = this.chatUI.chatDiv;
         this.chatPanel.style.width = '20%';
@@ -384,11 +400,11 @@ class aiFiddleEditor {
             console.log('errorData:', errorData);
 
 
-            let filteredErrorString="";
+            let filteredErrorString = "";
             for (let key in errorData) {
                 console.log(errorData[key]);
                 // check if the value starts with blob:
-                if ((errorData[key] +"").startsWith('blob:')) {
+                if ((errorData[key] + "").startsWith('blob:')) {
                     console.log('Ignoring blob URL:', errorData[key]);
                     continue;
                 }

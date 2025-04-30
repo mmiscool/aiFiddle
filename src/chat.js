@@ -17,14 +17,17 @@ export class ChatUI extends conversation {
         this.chatDiv.style.height = "100%";
         this.model = readSetting(`llm/default_model`);
 
-        this.setupSystemPrompts();
-        this.createConversationUI();
-        this.createSettingsUI();
-        this.toggleChat();
-        this.toggleChat();
+        this.setup();
     }
 
     async setup() {
+        this.setupSystemPrompts();
+        this.createConversationUI();
+        this.createSettingsUI();
+
+
+
+
         this.model = await readSetting(`llm/default_model`);
         await this.setModel();
         // attempt to read the api keys for each service
@@ -41,10 +44,6 @@ export class ChatUI extends conversation {
         }
 
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
-
-
-
-
         await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini");
         return true;
     }
@@ -58,29 +57,13 @@ export class ChatUI extends conversation {
 
     async setupSystemPrompts() {
         await this.addMessage({ role: "system", content: await readSetting(`prompts/system.md`), hidden: true, temp: false });
-        //await this.addMessage({ role: "system", content: await readSetting(`prompts/javascript-snippet-merge-guidelines.md`), hidden: true, temp: false });
         await this.addMessage({ role: "user", content: "", hidden: true, temp: false, dynamicContent: "javascript" });
-        //await this.addMessage({ role: "system", content: await readSetting(`prompts/html-snippet-merge-guidelines.md`), hidden: true, temp: false });
         await this.addMessage({ role: "user", content: "", hidden: true, temp: false, dynamicContent: "html" });
-        //await this.addMessage({ role: "system", content: await readSetting(`prompts/css-snippet-merge-guidelines.md`), hidden: true, temp: false });
         await this.addMessage({ role: "user", content: "", hidden: true, temp: false, dynamicContent: "css" });
         await this.updateConversationDynamicContent();
         await this.renderConversationMessages();
     }
 
-
-    async toggleChat() {
-        // switch between displaying the conversation and the settings
-        if (this.conversationDiv.style.display === "none") {
-            this.conversationDiv.style.display = "block";
-            this.chatSettingsDiv.style.display = "none";
-        }
-        else {
-            this.conversationDiv.style.display = "none";
-            this.chatSettingsDiv.style.display = "block";
-        }
-
-    }
 
     async createConversationUI() {
         this.conversationDiv = document.createElement("div");
@@ -148,7 +131,7 @@ export class ChatUI extends conversation {
         settingsButton.innerText = "⚙️";
         settingsButton.title = "Switch to settings mode";
         settingsButton.addEventListener("click", () => {
-            this.toggleChat();
+            this.settingsDialog.showModal();
         });
         controlsRow.appendChild(settingsButton);
     }
@@ -229,27 +212,68 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
 
         await renderMarkdown(message.content, messageDiv);
 
-        console.log("Message Div: ", messageDiv);
+        //console.log("Message Div: ", messageDiv);
         return messageDiv;
     }
 
     async createSettingsUI() {
-        await this.setup();
-        this.chatSettingsDiv = document.createElement("div");
-        this.chatSettingsDiv.className = "chat";
-        this.chatSettingsDiv.style.display = "none";
-        this.chatSettingsDiv.style.overflowY = "scroll";
-        this.chatDiv.appendChild(this.chatSettingsDiv);
+        this.settingsDialog = document.createElement("dialog");
+
+        this.settingsDialog.addEventListener("close", async () => {
+
+            // ensure that at least one of the key settings is set
+            const settings = await listSettings();
+            const keys = settings.filter(setting => setting.name.includes("key"));
+            const keysSet = keys.filter(setting => setting.value !== "");
+            if (keysSet.length === 0) {
+                alert("You must set at least one API key for the LLM services.");
+                this.settingsDialog.showModal();
+                return;
+            }
+            // close the dialog
+            this.settingsDialog.close();
+        });
+
+
+
+        this.settingsDialog.className = "dialog";
+        document.body.appendChild(this.settingsDialog);
+        this.settingsDialog.showModal();
+
+        // make a div to hold the dialog's content
+        const dialogContent = document.createElement("div");
+        dialogContent.className = "dialog-content";
+        this.settingsDialog.appendChild(dialogContent);
+
+
         // add a button to the top of the settings div to switch to the chat div
         const chatButton = document.createElement("button");
-        chatButton.innerText = "Return to chat 🗨";
-        chatButton.style.width = "100%";
+        chatButton.innerText = "X";
         // tooltip
-        chatButton.title = "Switch to chat mode";
+        chatButton.title = "<----Back to chat";
         chatButton.addEventListener("click", () => {
-            this.toggleChat();
+            this.settingsDialog.close();
         });
-        this.chatSettingsDiv.appendChild(chatButton);
+
+        Object.assign(chatButton.style, {
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            width: "30px",
+            height: "30px",
+            background: "#ff4444",
+            color: "white",
+            border: "none",
+            borderRadius: "50%",
+            fontSize: "1.2em",
+            fontWeight: "bold",
+            lineHeight: "30px",
+            textAlign: "center",
+            cursor: "pointer"
+        });
+
+
+        dialogContent.appendChild(chatButton);
 
 
         const settings = await listSettings();
@@ -266,9 +290,6 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         // itterate over settings and create a input for each setting.
         // make it so that the setting value is writted immediately on change
         settings.forEach(setting => {
-            const settingDiv = document.createElement("span");
-
-            //settingDiv.className = "setting";
             const label = document.createElement("label");
             label.innerText = setting.name;
             // replace "llmConfig/" with "" in the label
@@ -281,7 +302,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             // check if the name contains the word prompt. If it is a prompt then create a textarea
             if (setting.name.includes("prompt")) {
                 input = document.createElement("textarea");
-                input.style.height = "200px";
+                //input.style.height = "400px";
             } else if (setting.name.includes("key")) {
                 input.type = "password";
             } else {
@@ -293,9 +314,8 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             input.addEventListener("change", async () => {
                 await this.saveSettings();
             });
-            settingDiv.appendChild(label);
-            settingDiv.appendChild(input);
-            this.chatSettingsDiv.appendChild(settingDiv);
+            dialogContent.appendChild(label);
+            dialogContent.appendChild(input);
 
             // add an onchange event to the input
             input.addEventListener("change", async () => {
@@ -304,17 +324,6 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
 
         });
 
-        //this.chatDiv.appendChild(this.chatSettingsDiv);
-    }
-
-    async loadSettings() {
-        const settings = await llmSettings();
-        for (const [key, value] of Object.entries(settings)) {
-            const input = document.getElementById(key);
-            if (input) {
-                input.value = settings[key];
-            }
-        }
     }
 }
 

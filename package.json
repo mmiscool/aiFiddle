@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "description": "AI assisted codeing environment similar to JSFiddle",
   "scripts": {
-    "dev": "npx parcel src/index.html  --no-hmr ",
-    "build": "npx parcel build src/index.html --no-source-maps --public-url ."
+    "dev": "npx parcel src/index.html  ",
+    "build": "npx parcel build src/index.html --no-source-maps --public-url .",
+    "build:json-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/json/json.worker.js --no-source-maps --log-level error",
+    "build:css-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/css/css.worker.js --no-source-maps --log-level error",
+    "build:html-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/html/html.worker.js --no-source-maps --log-level error",
+    "build:ts-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js --no-source-maps --log-level error",
+    "build:editor-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/editor/editor.worker.js --no-source-maps --log-level error",
+    "build:monaco-workers": "pnpm run build:json-worker && pnpm run build:css-worker && pnpm run build:html-worker && pnpm run build:ts-worker && pnpm run build:editor-worker"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -37,7 +43,9 @@
   },
   "homepage": "https://github.com:mmiscool/aiFiddle#readme",
   "devDependencies": {
+    "@parcel/core": "^2.14.4",
     "@parcel/transformer-inline-string": "^2.14.4",
+    "@parcel/transformer-js": "^2.14.4",
     "assert": "^2.1.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",

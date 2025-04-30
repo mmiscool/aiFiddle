@@ -308,30 +308,56 @@ html,
 }
 
 .dialog {
-    position: absolute;
+    position: fixed;
     background: #333;
     color: #fff;
     padding: 10px;
     border-radius: 5px;
-    z-index: 10000;
-    width: 200px;
-    max-height: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    left: 10px;
-    top: 10px;
+    z-index: 100000;
+
+    width: 80%;
+    height: 80%;
+
+
+    left: 10%;
+    right: 10%;
+    top: 10%;
+    bottom: 10%;
+
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border: 1px solid #666;
     font-size: 14px;
     font-weight: bold;
+    box-sizing: border-box;
+
 }
 
-.dialog-close {
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    padding: 0px 5px;
+.dialog>* {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+
+::backdrop {
+    background: linear-gradient(165deg,#470336 0%,#000 25% 70%,#00d4ffd4);
+    opacity: 0.75;
+}
+
+
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.dialog-content textarea {
+    flex-grow: 1;
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    /* Optional: disable manual resizing */
 }
 
 .project-item {
@@ -374,7 +400,7 @@ pre {
     background: #2e2e2e;
     padding: 1rem;
     border-radius: 0.5rem;
-    
+
     margin-top: 1.5rem;
 }
 
@@ -399,8 +425,8 @@ code {
     margin: 5px;
     padding: 5px;
     white-space: pre;
-    overflow-x:scroll;
-    width:100%;
+    overflow-x: scroll;
+    width: 100%;
 }
 
 
@@ -417,56 +443,56 @@ code {
 .rendered-markdown h1,
 .rendered-markdown h2,
 .rendered-markdown h3 {
-  color: #fff;
-  margin-top: 1.5rem;
+    color: #fff;
+    margin-top: 1.5rem;
 }
 
 .rendered-markdown ul,
 .rendered-markdown ol {
-  margin-left: 1.5rem;
-  padding-left: 1rem;
+    margin-left: 1.5rem;
+    padding-left: 1rem;
 }
 
 .rendered-markdown li {
-  margin-bottom: 0.4rem;
+    margin-bottom: 0.4rem;
 }
 
 .rendered-markdown blockquote {
-  border-left: 4px solid #888;
-  padding-left: 1rem;
-  margin: 1rem 0;
-  color: #aaa;
-  font-style: italic;
+    border-left: 4px solid #888;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #aaa;
+    font-style: italic;
 }
 
 .rendered-markdown code {
-  background: #2a2a2a;
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.3rem;
+    background: #2a2a2a;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
 }
 
 .rendered-markdown pre {
-  margin-top: 1rem;
+    margin-top: 1rem;
 }
 
 /* Tables */
 .rendered-markdown table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
 }
 
 .rendered-markdown th,
 .rendered-markdown td {
-  border: 1px solid #555;
-  padding: 0.5rem;
-  text-align: left;
+    border: 1px solid #555;
+    padding: 0.5rem;
+    text-align: left;
 }
 
 .rendered-markdown th {
-  background: #333;
+    background: #333;
 }
 
 .rendered-markdown tr:nth-child(even) {
-  background: #2a2a2a;
+    background: #2a2a2a;
 }
