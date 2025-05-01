@@ -58,7 +58,7 @@ export async function replaceSettingIfNotFound(key, value) {
     // check if the key exists in local storage
     const existingValue = await readSetting(key);
     if (existingValue === undefined || existingValue === null || existingValue === "") {
-        // if it doesn't exist, create it
+        alert(`Key ${key} not found in localStorage. Creating a new key.`);
         await writeSetting(key, value);
     } else {
         if (await readSetting(key) !== value) {

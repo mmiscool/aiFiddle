@@ -337,7 +337,7 @@ html,
 
 
 ::backdrop {
-    background: linear-gradient(165deg,#470336 0%,#000 25% 70%,#00d4ffd4);
+    background: linear-gradient(165deg, #470336 0%, #000 25% 70%, #00d4ffd4);
     opacity: 0.75;
 }
 
@@ -364,6 +364,7 @@ html,
     width: 100%;
     box-sizing: border-box;
 }
+
 .dialog-content label {
     margin-top: 5px;
     font-weight: bold;
@@ -414,7 +415,7 @@ pre {
     padding: 1rem;
     border-radius: 0.5rem;
 
-    margin-top: 1.5rem;
+    margin-top: .1rem;
 }
 
 .code-buttons {
@@ -429,6 +430,7 @@ pre {
 
 
 code {
+    display: block;
     background: #000000;
     padding: 0.2rem 0.4rem;
     border-radius: 0.3rem;
@@ -439,7 +441,6 @@ code {
     padding: 5px;
     white-space: pre;
     overflow-x: scroll;
-    width: 100%;
 }
 
 

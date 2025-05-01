@@ -35,7 +35,7 @@ export class ChatUI extends conversation {
             if (answer) await writeSetting(`prompts/system.md`, system_prompt)
 
         }
-
+        await replaceSettingIfNotFound(`llm/auto_execute_code.bool`, "false");
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
         await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini");
 
@@ -187,14 +187,14 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             const message = this.messages[i];
 
 
-            await this.addMessageDiv(message);
+            await this.addMessageDiv(message, i === this.messages.length - 1);
         }
 
 
     }
 
 
-    async addMessageDiv(message) {
+    async addMessageDiv(message, isLastMessage = false) {
         const messageDiv = document.createElement("div");
         await this.topArea.appendChild(messageDiv);
         if (message.hidden) {
@@ -209,7 +209,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         }
         this.topArea.scrollTop = this.topArea.scrollHeight;
 
-        await renderMarkdown(message.content, messageDiv);
+        await renderMarkdown(message.content, messageDiv, isLastMessage);
 
         //console.log("Message Div: ", messageDiv);
         return messageDiv;
@@ -308,9 +308,14 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             // check if the name contains the word prompt. If it is a prompt then create a textarea
             if (setting.name.includes("prompt")) {
                 input = document.createElement("textarea");
-                //input.style.height = "400px";
             } else if (setting.name.includes("key")) {
                 input.type = "password";
+            } else if (setting.name.includes("bool")) {
+                input.type = "checkbox";
+                input.checked = setting.value === "true";
+                input.addEventListener("change", async () => {
+                    input.value = input.checked;
+                });
             } else {
                 input.type = "text";
             }
@@ -318,7 +323,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             input.id = setting.name;
             input.value = setting.value;
             input.addEventListener("change", async () => {
-                await this.saveSettings();
+                await writeSetting(setting.name, input.value);
             });
             dialogContent.appendChild(label);
             dialogContent.appendChild(input);
@@ -337,20 +342,26 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
 
 
 
-function renderMarkdown(md, targetElement) {
-    const html = marked(md, {
-        highlight: (code, lang) => {
+async function renderMarkdown(md, targetElement, isLastMessage = false) {
+    const html = await marked.parse(md, {
+        highlight: async (code, lang) => {
             return hljs.highlightAuto(code, [lang]).value;
         }
     });
 
     targetElement.innerHTML = html;
     targetElement.classList.add("rendered-markdown");
-    enhanceCodeBlocks(targetElement);
+
+    let auto_execute_code = false;
+    if (await readSetting(`llm/auto_execute_code.bool`) === "true") auto_execute_code = true;
+
+    await enhanceCodeBlocks(targetElement, auto_execute_code);
 }
 
-function enhanceCodeBlocks(container) {
-    container.querySelectorAll("pre code").forEach(codeBlock => {
+async function enhanceCodeBlocks(container, autoExicute = false) {
+    const codeBlocks = container.querySelectorAll("pre code");
+
+    for (const codeBlock of codeBlocks) {
         const pre = codeBlock.parentElement;
 
         const btnContainer = document.createElement("div");
@@ -365,11 +376,16 @@ function enhanceCodeBlocks(container) {
         const alertBtn = document.createElement("button");
         alertBtn.textContent = "🤖✎⚡";
         alertBtn.onclick = async () => {
-            const lang = await codeBlock.className.split(" ").find(cls => cls.startsWith("language-")).replace("language-", "");
+            const lang = codeBlock.className
+                .split(" ")
+                .find(cls => cls.startsWith("language-"))
+                ?.replace("language-", "") || "";
             await editorManager.applyChanges(lang, codeBlock.textContent);
         };
 
         btnContainer.append(copyBtn, alertBtn);
         pre.prepend(btnContainer);
-    });
+
+        if (autoExicute) await alertBtn.click();
+    }
 }

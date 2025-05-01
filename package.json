@@ -23,7 +23,8 @@
     "marked": "^15.0.10",
     "monaco-editor": "^0.52.2",
     "openai": "^4.95.1",
-    "parcel": "^2.14.4"
+    "parcel": "^2.14.4",
+    "postcss": "^8.5.3"
   },
   "keywords": [
     "light-mode",
@@ -61,5 +62,18 @@
     "url": "^0.11.4",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher",
+      "@swc/core",
+      "lmdb",
+      "msgpackr-extract"
+    ],
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@swc/core",
+      "lmdb"
+    ]
   }
 }

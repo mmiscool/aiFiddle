@@ -1,90 +1,130 @@
-const testMode = process.env.NODE_ENV === 'test';
+import postcss from 'postcss';
+
 export class cssManipulator {
-  constructor() {
-    this.parsedCSS = [];
-    this.code = '';
-  }
-  // Method to parse CSS into an array of selector-declaration pairs
-  parse(css = this.code) {
-    const regex = /([^{}]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)*\}/g;
-    this.parsedCSS = [];
-    let match;
-    while ((match = regex.exec(css)) !== null) {
-      const selector = match[1].trim();
-      const declarationBlock = this.extractDeclarations(match[0]);
-      this.parsedCSS.push({
-        selector,
-        declarationBlock
-      });
+    constructor(code = '') {
+        this.code = code;
+        this.ast = null;
     }
-  }
-  setCode(code) {
-    this.code = code;
-  }
-  async mergeCode(newCode) {
-    try {
-      
-      this.code = this.code + '\n\n' + newCode;
-      this.mergeDuplicates();
-      return this.generateCode();
-    }catch(e){
-      console.log(e);
-      return false;
-    }
-  }
 
-  // Method to resolve duplicate selectors
-  mergeDuplicates() {
-    this.parse();
-
-    const selectorMap = new Map();
-    // Traverse from the end to preserve the last occurrence
-    for (let i = this.parsedCSS.length - 1; i >= 0; i--) {
-      const { selector, declarationBlock } = this.parsedCSS[i];
-      if (selectorMap.has(selector)) {
-        // Remove the earlier occurrence
-        this.parsedCSS.splice(i, 1);
-      } else {
-        selectorMap.set(selector, declarationBlock);
-      }
+    async setCode(code) {
+        this.code = code;
+        this.ast = postcss.parse(this.code);
+        return this.code;
     }
-  }
-  // Method to convert the parsed CSS structure back into a CSS string
-  generateCode() {
-    return this.parsedCSS.map(({ selector, declarationBlock }) => {
-      const indentedDeclarations = declarationBlock.split(';').map(declaration => declaration.trim()).filter(Boolean).map(declaration => `  ${declaration};`).join('\n');
-      return `${selector} {\n${indentedDeclarations}\n}`;
-    }).join('\n\n');
-  }
-  extractDeclarations(cssBlock) {
-    const start = cssBlock.indexOf('{') + 1;
-    const end = cssBlock.lastIndexOf('}');
-    return cssBlock.slice(start, end).trim();
-  }
+
+    async parse() {
+        this.ast = postcss.parse(this.code);
+        return this.ast;
+    }
+
+    async mergeCode(newCode) {
+        const newAst = await postcss.parse(newCode);
+        await this._mergeRules(newAst);   // Merge snippet first
+        await this.mergeDuplicates();     // Then clean everything
+        return this.generateCode();
+    }
+
+    _mergeRules(newAst) {
+        const existingRules = new Map();
+
+        this.ast.walkRules(rule => {
+            if (!existingRules.has(rule.selector)) {
+                existingRules.set(rule.selector, rule);
+            }
+        });
+
+        newAst.walkRules(newRule => {
+            // Entire block deletion marker
+            const isDeleteBlock =
+                newRule.nodes.length === 1 &&
+                newRule.nodes[0].prop === 'DELETE_THIS' &&
+                newRule.nodes[0].value === 'DELETE_THIS';
+
+            if (isDeleteBlock) {
+                const existing = this.ast.nodes.find(r =>
+                    r.type === 'rule' && r.selector === newRule.selector
+                );
+                if (existing) {
+                    existing.remove();
+                }
+                return;
+            }
+
+            const existing = existingRules.get(newRule.selector);
+            if (existing) {
+                const existingDecls = new Map();
+                existing.walkDecls(decl => existingDecls.set(decl.prop, decl));
+
+                newRule.walkDecls(decl => {
+                    const value = decl.value.trim();
+                    if (value === 'DELETE_THIS') {
+                        existingDecls.delete(decl.prop);
+                    } else if (value) {
+                        existingDecls.set(decl.prop, decl);
+                    }
+                });
+
+                existing.removeAll();
+                for (const decl of existingDecls.values()) {
+                    existing.append(decl);
+                }
+            } else {
+                this.ast.append(newRule.clone());
+            }
+        });
+    }
+
+    async mergeDuplicates() {
+        const ruleMap = new Map();
+
+        this.ast.walkRules(rule => {
+            const key = `${rule.parent?.type === 'atrule' ? rule.parent.toString() + '|' : ''}${rule.selector}`;
+
+            const isDeleteBlock =
+                rule.nodes.length === 1 &&
+                rule.nodes[0].prop === 'DELETE_THIS' &&
+                rule.nodes[0].value === 'DELETE_THIS';
+
+            if (isDeleteBlock) {
+                rule.remove();
+                return;
+            }
+
+            if (!ruleMap.has(key)) {
+                ruleMap.set(key, rule);
+            } else {
+                const existing = ruleMap.get(key);
+                const declMap = new Map();
+
+                existing.walkDecls(decl => declMap.set(decl.prop, decl));
+
+                rule.walkDecls(decl => {
+                    const value = decl.value.trim();
+                    if (value === 'DELETE_THIS') {
+                        declMap.delete(decl.prop);
+                    } else if (value) {
+                        declMap.set(decl.prop, decl);
+                    }
+                });
+
+                existing.removeAll();
+                for (const decl of declMap.values()) {
+                    existing.append(decl);
+                }
+
+                rule.remove();
+            }
+        });
+    }
+
+    generateCode() {
+        const result = this.ast.toString();
+        this.code = result;
+        return result;
+    }
+
+    getCode() {
+        return this.code;
+    }
 }
 
-if (testMode) {
-  // Example usage
-  const css = `
-  div > .button {
-    color: red;
-  }
-  .container, .box {
-    margin: 10px;
-  }
-  div > .button {
-    background: blue;
-  }
-  @media (max-width: 600px) {
-    .responsive {
-      display: block;
-    }
-  }
-  `;
-  const manipulator = new cssManipulator();
-  manipulator.parse(css);
-  manipulator.mergeDuplicates();
-  const resolvedCSS = manipulator.generateCode();
-  console.log('Original CSS:\n', css);
-  console.log('Resolved CSS:\n', resolvedCSS);
-}
