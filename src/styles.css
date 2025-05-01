@@ -266,8 +266,6 @@ html,
     display: flex;
     gap: 8px;
     padding: 3px;
-    background: #2d2d2d;
-    color: #fff;
     align-items: center;
     font-size: 14px;
     height: 33px;
@@ -315,14 +313,14 @@ html,
     border-radius: 5px;
     z-index: 100000;
 
-    width: 80%;
-    height: 80%;
+    width: 90%;
+    height: 90%;
 
 
-    left: 10%;
-    right: 10%;
-    top: 10%;
-    bottom: 10%;
+    left: 5%;
+    right: 5%;
+    top: 5%;
+    bottom: 5%;
 
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border: 1px solid #666;
@@ -358,6 +356,21 @@ html,
     box-sizing: border-box;
     resize: none;
     /* Optional: disable manual resizing */
+}
+
+.dialog-content input {
+    margin-top: 5px;
+    flex-grow: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.dialog-content label {
+    margin-top: 5px;
+    font-weight: bold;
+
+    /* set the font size to 14px */
+    font-size: 18px;
+    color: #009dff;
 }
 
 .project-item {

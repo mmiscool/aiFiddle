@@ -158,6 +158,7 @@ CSS snippets must **always** be:
 ✅ **Well-formatted**, clean declarations.  
 ✅ Avoid empty blocks or duplicate selectors.
 ✅ the content inside the {} will always be complete replaced by the CSS from the snippet. 
+✅ Always include all the content originally inside the {} for any exising CSS that is being modifided. Not follwoing this rule will result in data loss. 
 
 ---
 

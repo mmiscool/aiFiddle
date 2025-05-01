@@ -26,8 +26,6 @@ import { deleteFile } from './llmCall';
 import { javascriptManipulator } from './mergeTools/javascript/javascript';
 import { cssManipulator } from './mergeTools/css/css';
 import { mergeHTML } from './mergeTools/html/html';
-//import { getMonacoWorker } from './monaco-editor-workers.js';
-
 
 
 class aiFiddleEditor {

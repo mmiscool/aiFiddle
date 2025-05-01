@@ -21,13 +21,6 @@ export class ChatUI extends conversation {
     }
 
     async setup() {
-        this.setupSystemPrompts();
-        this.createConversationUI();
-        this.createSettingsUI();
-
-
-
-
         this.model = await readSetting(`llm/default_model`);
         await this.setModel();
         // attempt to read the api keys for each service
@@ -39,12 +32,17 @@ export class ChatUI extends conversation {
 
         if (await readSetting(`prompts/system.md`) !== system_prompt) {
             const answer = await confirm("You have either customized your prompt or the default prompt has changed.\n Would you like to updated to the latest default prompt?")
-            if (answer) writeSetting(`prompts/system.md`, system_prompt)
+            if (answer) await writeSetting(`prompts/system.md`, system_prompt)
 
         }
 
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
         await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini");
+
+        await this.createConversationUI();
+        await this.createSettingsUI();
+        await this.setupSystemPrompts();
+
         return true;
     }
 
@@ -129,7 +127,7 @@ export class ChatUI extends conversation {
         const settingsButton = document.createElement("button");
         settingsButton.className = "settings-button";
         settingsButton.innerText = "⚙️";
-        settingsButton.title = "Switch to settings mode";
+        settingsButton.title = "Change LLM settings";
         settingsButton.addEventListener("click", () => {
             this.settingsDialog.showModal();
         });
@@ -246,6 +244,13 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         this.settingsDialog.appendChild(dialogContent);
 
 
+        // add a title to the dialog
+        const title = document.createElement("h1");
+        title.innerText = "Settings";
+        dialogContent.appendChild(title);
+
+
+
         // add a button to the top of the settings div to switch to the chat div
         const chatButton = document.createElement("button");
         chatButton.innerText = "X";
@@ -295,8 +300,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             // replace "llmConfig/" with "" in the label
             label.innerText = label.innerText.replace("llmConfig/", "");
             label.innerText = label.innerText.replace(".txt", "");
-            label.style.width = "100%";
-            label.style.marginTop = "10px";
+
 
             let input = document.createElement("input");
             // check if the name contains the word prompt. If it is a prompt then create a textarea

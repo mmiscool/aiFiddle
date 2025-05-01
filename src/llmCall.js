@@ -1,11 +1,5 @@
 import { OpenAI } from "openai";
 
-import css_snippet_merge_guidelines_prompt from "bundle-text:./prompts/css-snippet-merge-guidelines.md"
-import html_snippet_merge_guidelines_prompt from "bundle-text:./prompts/html-snippet-merge-guidelines.md"
-import javascript_snippet_merge_guidelines_prompt from "bundle-text:./prompts/javascript-snippet-merge-guidelines.md"
-
-//css-snippet-merge-guidelines.md  html-snippet-merge-guidelines.md  javascript-snippet-merge-guidelines.md  system.md
-
 
 
 export async function readSetting(key) {
