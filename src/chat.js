@@ -39,7 +39,7 @@ export class ChatUI extends conversation {
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
         await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini");
 
-        await this.createConversationUI();
+        //await this.createConversationUI();
         await this.createSettingsUI();
         await this.setupSystemPrompts();
 
@@ -64,6 +64,7 @@ export class ChatUI extends conversation {
 
 
     async createConversationUI() {
+        this.chatDiv.innerHTML = "";
         this.conversationDiv = document.createElement("div");
         this.conversationDiv.className = "conversation";
         this.chatDiv.appendChild(this.conversationDiv);
@@ -228,6 +229,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
                 this.settingsDialog.showModal();
                 return;
             }
+            this.createConversationUI();
             // close the dialog
             this.settingsDialog.close();
         });
