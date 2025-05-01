@@ -10,7 +10,8 @@
     "build:html-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/html/html.worker.js --no-source-maps --log-level error",
     "build:ts-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js --no-source-maps --log-level error",
     "build:editor-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/editor/editor.worker.js --no-source-maps --log-level error",
-    "build:monaco-workers": "pnpm run build:json-worker && pnpm run build:css-worker && pnpm run build:html-worker && pnpm run build:ts-worker && pnpm run build:editor-worker"
+    "build:monaco-workers": "pnpm run build:json-worker && pnpm run build:css-worker && pnpm run build:html-worker && pnpm run build:ts-worker && pnpm run build:editor-worker",
+    "generate-license-list": "pnpx license-report --output=markdown --fields=name --fields=licenseType  --fields=installedVersion  --fields=link > 3rdPartyLicenceCredits.md"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

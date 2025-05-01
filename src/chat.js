@@ -251,6 +251,13 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         title.innerText = "Settings";
         dialogContent.appendChild(title);
 
+        // adding a link to the github repo
+        const githubLink = document.createElement("a");
+        githubLink.innerText = "Copyright © 2025 mmiscool, Source at https://github.com/mmiscool/aiFiddle";
+        githubLink.href = "https://github.com/mmiscool/aiFiddle";
+        githubLink.target = "_blank";
+
+        dialogContent.appendChild(githubLink);
 
 
         // add a button to the top of the settings div to switch to the chat div

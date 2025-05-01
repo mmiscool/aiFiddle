@@ -1,0 +1,33 @@
+| Name                              | License type | Installed version | Link                                                       |
+| :-------------------------------- | :----------- | :---------------- | :--------------------------------------------------------- |
+| @anthropic-ai/sdk                 | MIT          | 0.39.0            | https://github.com/anthropics/anthropic-sdk-typescript.git |
+| @parcel/config-default            | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
+| escodegen                         | BSD-2-Clause | 2.1.0             | git+ssh://git@github.com/estools/escodegen.git             |
+| esprima-next                      | BSD-2-Clause | 6.0.3             | git+https://github.com/node-projects/esprima-next.git      |
+| estraverse                        | BSD-2-Clause | 5.3.0             | git+ssh://git@github.com/estools/estraverse.git            |
+| highlight.js                      | BSD-3-Clause | 11.11.1           | git://github.com/highlightjs/highlight.js.git              |
+| linkedom                          | ISC          | 0.18.9            | git+https://github.com/WebReflection/linkedom.git          |
+| marked                            | MIT          | 15.0.11           | git://github.com/markedjs/marked.git                       |
+| monaco-editor                     | MIT          | 0.52.2            | https://github.com/microsoft/monaco-editor                 |
+| openai                            | Apache-2.0   | 4.96.0            | https://github.com/openai/openai-node.git                  |
+| parcel                            | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
+| postcss                           | MIT          | 8.5.3             | git+https://github.com/postcss/postcss.git                 |
+| @parcel/core                      | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
+| @parcel/transformer-inline-string | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
+| @parcel/transformer-js            | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
+| assert                            | MIT          | 2.1.0             | git+https://github.com/browserify/commonjs-assert.git      |
+| browserify-zlib                   | MIT          | 0.2.0             | git+https://github.com/devongovett/browserify-zlib.git     |
+| buffer                            | MIT          | 6.0.3             | git://github.com/feross/buffer.git                         |
+| crypto-browserify                 | MIT          | 3.12.1            | git://github.com/browserify/crypto-browserify.git          |
+| events                            | MIT          | 3.3.0             | git://github.com/Gozala/events.git                         |
+| https-browserify                  | MIT          | 1.0.0             | git://github.com/substack/https-browserify.git             |
+| os-browserify                     | MIT          | 0.3.0             | git+ssh://git@github.com/CoderPuppy/os-browserify.git      |
+| path-browserify                   | MIT          | 1.0.1             | git://github.com/browserify/path-browserify.git            |
+| process                           | MIT          | 0.11.10           | git://github.com/shtylman/node-process.git                 |
+| stream-browserify                 | MIT          | 3.0.0             | git://github.com/browserify/stream-browserify.git          |
+| stream-http                       | MIT          | 3.2.0             | git://github.com/jhiesey/stream-http.git                   |
+| string_decoder                    | MIT          | 1.3.0             | git://github.com/nodejs/string_decoder.git                 |
+| url                               | MIT          | 0.11.4            | git+https://github.com/defunctzombie/node-url.git          |
+| util                              | MIT          | 0.12.5            | git://github.com/browserify/node-util.git                  |
+| vm-browserify                     | MIT          | 1.1.2             | git+ssh://git@github.com/substack/vm-browserify.git        |
+
