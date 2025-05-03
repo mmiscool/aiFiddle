@@ -43,7 +43,7 @@ This tool uses AST (abstract syntax trees) to automatically merge LLM generate c
 - Using ASTs to merge snippets with original code makes it impossible to merge syntactically incorrect code preventing corruption.  
 
 We provide the rules for how to format code snippets to the LLM. See the [Snippet generation prompt](src/prompts/system.md) for what the rules are.
-You can take a look at the actual code used for doing the AST merging in the [src/mergeTools/] (src/mergeTools/) folder.
+You can take a look at the actual code used for doing the AST merging in the [snipsplicer repo](https://github.com/mmiscool/snipsplicer).
 
 
 
