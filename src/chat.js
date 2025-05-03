@@ -1,10 +1,11 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import system_prompt from "bundle-text:./prompts/system.md"
+//import system_prompt from "bundle-text:./prompts/system.md"
 import { conversation, writeSetting, listSettings, writeSetting, readSetting, replaceSettingIfNotFound } from "./llmCall.js";
+import { mergeToolsPromptStrings } from 'snipsplicer';
 
-
+const system_prompt = mergeToolsPromptStrings.complete;
 let editorManager = null;
 
 // new class extends conversation
@@ -16,6 +17,7 @@ export class ChatUI extends conversation {
         this.chatDiv.className = "chat";
         this.chatDiv.style.height = "100%";
         this.model = readSetting(`llm/default_model`);
+        this.title = "";
 
         this.setup();
     }
@@ -59,7 +61,7 @@ export class ChatUI extends conversation {
         await this.addMessage({ role: "user", content: "", hidden: true, temp: false, dynamicContent: "html" });
         await this.addMessage({ role: "user", content: "", hidden: true, temp: false, dynamicContent: "css" });
         await this.updateConversationDynamicContent();
-        await this.renderConversationMessages();
+        //await this.renderConversationMessages();
     }
 
 
@@ -67,17 +69,17 @@ export class ChatUI extends conversation {
         this.chatDiv.innerHTML = "";
         this.conversationDiv = document.createElement("div");
         this.conversationDiv.className = "conversation";
-        this.chatDiv.appendChild(this.conversationDiv);
+        await this.chatDiv.appendChild(this.conversationDiv);
 
         this.topArea = document.createElement("div");
         this.topArea.className = "top-area";
-        this.conversationDiv.appendChild(this.topArea);
+        await this.conversationDiv.appendChild(this.topArea);
 
         // add conversation title as a h3 element
         this.titleElement = document.createElement("h3");
         this.titleElement.innerText = this.title;
         this.titleElement.className = "conversation-title";
-        this.topArea.appendChild(this.titleElement);
+        await this.topArea.appendChild(this.titleElement);
 
         const bottomArea = document.createElement("div");
         bottomArea.className = "bottom-area";
@@ -87,7 +89,7 @@ export class ChatUI extends conversation {
         this.messageInput.className = "message-input";
         this.messageInput.placeholder = "Type your message here...";
         this.messageInput.value = ``;
-        bottomArea.appendChild(this.messageInput);
+        await bottomArea.appendChild(this.messageInput);
 
         const sendButton = document.createElement("button");
         sendButton.className = "send-button";
@@ -95,7 +97,7 @@ export class ChatUI extends conversation {
         sendButton.addEventListener("click", () => {
             this.submitMessageButtonEvent();
         });
-        bottomArea.appendChild(sendButton);
+        await bottomArea.appendChild(sendButton);
 
         const controlsRow = document.createElement("div");
         controlsRow.className = "controls-row";
@@ -103,7 +105,7 @@ export class ChatUI extends conversation {
 
         const modelSelector = document.createElement("select");
         modelSelector.className = "model-selector";
-        controlsRow.appendChild(modelSelector);
+        await controlsRow.appendChild(modelSelector);
 
         // use super.listAllModels() to get the models list and populate the selector
         const models = await this.listAllModels();
@@ -132,7 +134,8 @@ export class ChatUI extends conversation {
         settingsButton.addEventListener("click", () => {
             this.settingsDialog.showModal();
         });
-        controlsRow.appendChild(settingsButton);
+        await controlsRow.appendChild(settingsButton);
+        return "done";
     }
 
 
@@ -171,6 +174,8 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
     }
 
     async renderConversationMessages() {
+        console.log("Rendering conversation messages");
+        console.log(this.titleElement);
         this.titleElement.innerText = this.title;
 
         // remove all divs with class message

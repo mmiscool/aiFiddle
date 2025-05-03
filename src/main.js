@@ -20,18 +20,24 @@ self.MonacoEnvironment = {
 
 
 import * as monaco from 'monaco-editor';
-import { ChatCompletionRunner } from 'openai/lib/ChatCompletionRunner.mjs';
 import { ChatUI } from './chat';
-import { deleteFile } from './llmCall';
-import { javascriptManipulator } from './mergeTools/javascript/javascript';
-import { cssManipulator } from './mergeTools/css/css';
-import { mergeHTML } from './mergeTools/html/html';
+import { deleteFile, readSetting } from './llmCall';
+import sneakySimpleWYSWYGtool from "bundle-text:./sneakySimpleWYSWYGtool.js";
+import { mergeCode, mergeToolsPromptStrings} from "snipsplicer";
+
+
+
+
+
+
+
+
 
 
 class aiFiddleEditor {
     constructor(container = document.body) {
         this.container = container;
-        this.tabs = ['HTML', 'JS', 'CSS'];
+        this.tabs = ['html', 'javascript', 'css'];
         this.editors = {};
         this.activeEditor = null;
         this.project = {
@@ -55,6 +61,7 @@ class aiFiddleEditor {
         await this.setupLayout();
         await this.setupMessageListener();
         await this.setEditorValues();
+
     }
 
 
@@ -363,7 +370,7 @@ class aiFiddleEditor {
 
             this.editors[tab] = monaco.editor.create(container, {
                 value: '',
-                language: tab === 'JS' ? 'javascript' : tab.toLowerCase(),
+                language: tab === 'javascript' ? 'javascript' : tab.toLowerCase(),
                 theme: 'vs-dark',
                 automaticLayout: true
             });
@@ -379,7 +386,7 @@ class aiFiddleEditor {
             this.saveProjectToStorage();
         });
 
-        this.switchTab('HTML');
+        this.switchTab('html');
     }
 
     async replaceDOM() {
@@ -482,43 +489,15 @@ class aiFiddleEditor {
 
 
     async applyChanges(language, snippet) {
-        //console.log('Applying changes:', language, snippet);
-        // this.editors['HTML'].setValue(this.project.html);
-        // this.editors['JS'].setValue(this.project.js);
-        // this.editors['CSS'].setValue(this.project.css);
+        console.log('Applying changes:', language, snippet);
+        //console.log(language, await this.editors[language].getValue(), snippet)
+        const currentCode = await this.editors[language].getValue()
 
-        if (language === 'javascript') {
-            const manipulator = new javascriptManipulator();
-            await manipulator.setCode(this.editors['JS'].getValue());
-            await manipulator.parse();
-            await manipulator.mergeCode(snippet);
-            const newCode = await manipulator.generateCode();
-            await this.editors['JS'].setValue(newCode);
-            this.saveEditorValues();
-            this.switchTab('JS');
-        }
-        if (language === 'html') {
-            let baseHtmlTemplate = `
-            <html><head></head><body></body></html>
-            `
-
-            baseHtmlTemplate = await mergeHTML(await this.editors['HTML'].getValue(), snippet)
-
-
-            await this.editors['HTML'].setValue(baseHtmlTemplate, snippet);
-            this.saveEditorValues();
-            this.switchTab('HTML');
-        }
-        if (language === 'css') {
-            const manipulator = new cssManipulator();
-            await manipulator.setCode(this.editors['CSS'].getValue());
-            await manipulator.parse();
-            await manipulator.mergeCode(snippet);
-            const newCode = await manipulator.generateCode();
-            await this.editors['CSS'].setValue(newCode);
-            this.switchTab('CSS');
-            this.saveEditorValues();
-        }
+        const result = await mergeCode(language, currentCode, snippet);
+        await this.switchTab(language);
+        await this.editors[language].setValue(result);
+        await this.saveEditorValues();
+        if (await readSetting('llm/auto_execute_code.bool') == "true") await this.runProject();
     }
 
 
@@ -526,17 +505,17 @@ class aiFiddleEditor {
 
     async saveEditorValues() {
         this.project.name = this.nameInput.value;
-        this.project.html = await this.editors['HTML'].getValue();
-        this.project.js = await this.editors['JS'].getValue();
-        this.project.css = await this.editors['CSS'].getValue();
+        this.project.html = await this.editors['html'].getValue();
+        this.project.js = await this.editors['javascript'].getValue();
+        this.project.css = await this.editors['css'].getValue();
         this.saveProjectToStorage();
     }
 
     setEditorValues() {
         this.nameInput.value = this.project.name;
-        this.editors['HTML'].setValue(this.project.html);
-        this.editors['JS'].setValue(this.project.js);
-        this.editors['CSS'].setValue(this.project.css);
+        this.editors['html'].setValue(this.project.html);
+        this.editors['javascript'].setValue(this.project.js);
+        this.editors['css'].setValue(this.project.css);
     }
 
     async saveProjectToStorage(project = this.project) {
@@ -684,6 +663,7 @@ class aiFiddleEditor {
                 </script>
 
                 <script type="module" src="${JSurlBlob}"></script>
+                <script>${sneakySimpleWYSWYGtool}</script>
             </body>
         </html>`;
         }

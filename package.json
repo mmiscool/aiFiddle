@@ -20,12 +20,13 @@
     "esprima-next": "^6.0.3",
     "estraverse": "^5.3.0",
     "highlight.js": "^11.11.1",
-    "linkedom": "^0.18.9",
-    "marked": "^15.0.10",
+    "linkedom": "^0.18.10",
+    "marked": "^15.0.11",
     "monaco-editor": "^0.52.2",
-    "openai": "^4.95.1",
+    "openai": "^4.97.0",
     "parcel": "^2.14.4",
-    "postcss": "^8.5.3"
+    "postcss": "^8.5.3",
+    "snipsplicer": "^1.0.7"
   },
   "keywords": [
     "light-mode",
