@@ -49,4 +49,4 @@ You can take a look at the actual code used for doing the AST merging in the [sn
 
 # Credits
 This project uses various npm packages. 
-[See ./3rdPartyLicenseCredits.md](3rdPartyLicenceCredits.md) for the complete list.
+[See ./3rdPartyLicenseCredits.md](3rdPartyLicenseCredits.md) for the complete list.
