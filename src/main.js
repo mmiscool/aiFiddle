@@ -23,7 +23,7 @@ import * as monaco from 'monaco-editor';
 import { ChatUI } from './chat';
 import { deleteFile, readSetting } from './llmCall';
 import sneakySimpleWYSWYGtool from "bundle-text:./sneakySimpleWYSWYGtool.js";
-import { mergeCode, mergeToolsPromptStrings} from "snipsplicer";
+import { mergeCode, mergeToolsPromptStrings } from "snipsplicer";
 
 
 
@@ -180,6 +180,23 @@ class aiFiddleEditor {
 
             return btn;
         };
+
+        // ad a checkbox to toggle if we include the sneakySimpleWYSWYGtool
+        this.sneakyToolCheckbox = document.createElement('input');
+        this.sneakyToolCheckbox.type = 'checkbox';
+        this.sneakyToolCheckbox.style.marginRight = '5px';
+        this.sneakyToolCheckbox.style.cursor = 'pointer';
+        this.sneakyToolCheckbox.style.width = '20px';
+        this.sneakyToolCheckbox.style.height = '20px';
+        this.sneakyToolCheckbox.checked = false;
+        this.sneakyToolCheckbox.title = 'Include WYSIWYG tool';
+        this.sneakyToolCheckbox.onclick = () => {
+            if (this.sneakyToolCheckbox.checked) this.runProject();
+        }
+
+        this.iframeToolbar.appendChild(this.sneakyToolCheckbox);
+
+
 
         const runBtn = makeButton('▶', 'Run', () => this.runProject());
         const linkBtn = makeButton('🔗✎', 'Generate shareable link to load this project in the editor', () => this.copyEditorLink());
@@ -398,6 +415,13 @@ class aiFiddleEditor {
 
     setupMessageListener() {
         window.addEventListener('message', async (e) => {
+            if (e.data.type === 'html-edit') {
+                const newHTML = e.data.html
+                //set the editor value to the new HTML
+                await this.editors['html'].setValue(newHTML);
+                await this.editors['html'].trigger(`anyString`, 'editor.action.formatDocument'); 
+                return
+            }
             console.log('e.data type:', typeof e.data, Array.isArray(e.data));
             console.log('e.data:', e.data);
 
@@ -438,6 +462,7 @@ class aiFiddleEditor {
                 if (e.data.data[0] === 'log') {
                     msg.style.color = 'WHITE';
                 }
+
 
                 // add a 1px border to the message
                 msg.style.border = '1px solid #333';
@@ -607,7 +632,18 @@ class aiFiddleEditor {
         let JSurlBlob = createModuleBlobURL(this.project.js + "\n\n//# sourceURL=injectedScript.js", 'application/javascript');
         let CSSurlBlob = createModuleBlobURL(this.project.css, 'text/css');
 
+
+
+
+
         if (hijackDebugger) {
+            let sneakyCodeString = "";
+            if (this.sneakyToolCheckbox.checked == true) {
+                sneakyCodeString = sneakySimpleWYSWYGtool;
+            } else {
+                sneakyCodeString = "";
+            }
+
             returnString = `
         <html>
             <head>
@@ -618,7 +654,7 @@ class aiFiddleEditor {
             <body>
                 ${this.project.html}
 
-                <script>
+                <script type="module">
                     (function () {
                         const oldLog = console.log;
                         console.log = function (...args) {
@@ -660,10 +696,21 @@ class aiFiddleEditor {
                             }, '*');
                         });
                     })();
+                    
+                    ${sneakyCodeString}
                 </script>
 
                 <script type="module" src="${JSurlBlob}"></script>
-                <script>${sneakySimpleWYSWYGtool}</script>
+                <style>
+                    .wysiwyg-dragging {
+                        opacity: 0.5;
+                    }
+
+                    .wysiwyg-drop-target {
+                        outline: 2px dashed #00aaff;
+                    }
+                </style>
+
             </body>
         </html>`;
         }
