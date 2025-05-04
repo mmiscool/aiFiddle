@@ -195,6 +195,10 @@ class aiFiddleEditor {
         }
 
         this.iframeToolbar.appendChild(this.sneakyToolCheckbox);
+        // label the checkbox
+        const sneakyToolLabel = document.createElement('label');
+        sneakyToolLabel.textContent = 'WYSIWYG';
+        this.iframeToolbar.appendChild(sneakyToolLabel);
 
 
 
@@ -419,7 +423,10 @@ class aiFiddleEditor {
                 const newHTML = e.data.html
                 //set the editor value to the new HTML
                 await this.editors['html'].setValue(newHTML);
-                await this.editors['html'].trigger(`anyString`, 'editor.action.formatDocument'); 
+
+                await this.editors['html'].trigger(`anyString`, 'editor.action.formatDocument');
+                await this.applyChanges('html', newHTML);
+                //alert(newHTML)
                 return
             }
             console.log('e.data type:', typeof e.data, Array.isArray(e.data));
@@ -533,7 +540,12 @@ class aiFiddleEditor {
         this.project.html = await this.editors['html'].getValue();
         this.project.js = await this.editors['javascript'].getValue();
         this.project.css = await this.editors['css'].getValue();
+
+
         this.saveProjectToStorage();
+
+        // check if the sneakyToolCheckbox is checked and auto execute is enabled
+        if (this.sneakyToolCheckbox.checked) await this.runProject();
     }
 
     setEditorValues() {

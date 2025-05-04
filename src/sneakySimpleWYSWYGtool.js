@@ -177,7 +177,10 @@ export class WYSIWYGEditor {
             }
 
         `;
+
+        style.id = "wysiwyg-drag-drop-styles";
         document.head.appendChild(style);
+        style.id = "wysiwyg-drag-drop-styles";
     }
 
 
@@ -247,7 +250,7 @@ export class WYSIWYGEditor {
             this.draggedElement = null;
         }
 
-        console.log(this._getHtmlBody()); // Call to get the HTML body
+        this._getHtmlBody(); // Call to get the HTML body
     }
 
 
@@ -262,38 +265,92 @@ export class WYSIWYGEditor {
     }
 
 
-    _getHtmlBody() {
-        //return document.body.innerHTML;
-        // we want the whole document but omitting any <script> and <style> tags
-        // const clone = document.body.cloneNode(true);
-        // const scripts = clone.querySelectorAll("script, style");
-        // scripts.forEach(script => script.remove());
-        // return clone.innerHTML;
-
-
-        // we want to get the whole document but omitting any <script> and <style> tags
+    async _getHtmlBody() {
+        // Clone the full document element
         const clone = document.documentElement.cloneNode(true);
-        const scripts = clone.querySelectorAll("script, style");
-        scripts.forEach(script => script.remove());
+
+        // Remove <script> tags
+        const scripts = await clone.querySelectorAll("script");
+        await scripts.forEach(async el => await el.remove());
+
+        // remove all style tags
+        const styles = await clone.querySelectorAll("style");
+        await styles.forEach(async el => await el.remove());
+
+
+
+
+        // move all <link> elements to the head
+        const links = await clone.querySelectorAll("link");
+        await links.forEach(async el => {
+            const head = clone.querySelector("head");
+            if (head) {
+                head.appendChild(el);
+            }
+        });
+
+        // remove all link tags that have an href that starts with blob
+        const blobLinks = await clone.querySelectorAll("link");
+        await blobLinks.forEach(async el => {
+            const href = el.getAttribute("href");
+            if (href && href.startsWith("blob")) {
+                el.remove();
+            }
+        });
+
+        // make all meta tags have an id that matches the name
+        const metas = await clone.querySelectorAll("meta");
+        await metas.forEach(async meta => {
+            const name = meta.getAttribute("name");
+            if (name) {
+                await meta.setAttribute("id", name);
+            }
+        });
+
+
+        // move all <style>, <meta>, <link> and <title> elements to the head
+        const headElements = await clone.querySelectorAll("style, meta, link, title");
+        await headElements.forEach(async el => {
+            const head = clone.querySelector("head");
+            if (head) {
+                head.appendChild(el);
+                await el.setAttribute("setParentNode", "head");
+            }
+        });
+
+        // set all title elements to have id of "title"
+        const titles = await clone.querySelectorAll("title");
+        await titles.forEach(async el => {
+            const title = el.innerText;
+            if (title) {
+                await el.setAttribute("id", "title");
+                await el.setAttribute("setParentNode", "head");
+            }
+        });
+
+
+        // Extract head and body content
         const head = clone.querySelector("head");
         const body = clone.querySelector("body");
-        const headHtml = head ? head.innerHTML : "";
-        const bodyHtml = body ? body.innerHTML : "";
-        const html = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                ${headHtml}
-            </head>
-            <body>
-                ${bodyHtml}
-            </body>
-            </html>
-        `;
+        const headHtml = head?.innerHTML || "";
+        const bodyHtml = body?.innerHTML || "";
 
-        window.parent.postMessage({ type: 'html-edit', html  }, '*');
+        // Construct clean HTML
+        const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            ${headHtml}
+        </head>
+        <body>
+            ${bodyHtml}
+        </body>
+        </html>
+    `;
+
+        // Send to parent
+        window.parent.postMessage({ type: 'html-edit', html }, '*');
         return html;
-        
     }
 
 }
