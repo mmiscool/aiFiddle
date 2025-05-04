@@ -183,6 +183,7 @@ class aiFiddleEditor {
 
         // ad a checkbox to toggle if we include the sneakySimpleWYSWYGtool
         this.sneakyToolCheckbox = document.createElement('input');
+        this.sneakyToolCheckbox.id = 'sneakyToolCheckbox';
         this.sneakyToolCheckbox.type = 'checkbox';
         this.sneakyToolCheckbox.style.marginRight = '5px';
         this.sneakyToolCheckbox.style.cursor = 'pointer';
@@ -197,6 +198,7 @@ class aiFiddleEditor {
         this.iframeToolbar.appendChild(this.sneakyToolCheckbox);
         // label the checkbox
         const sneakyToolLabel = document.createElement('label');
+        sneakyToolLabel.setAttribute('for', 'sneakyToolCheckbox');
         sneakyToolLabel.textContent = 'WYSIWYG';
         this.iframeToolbar.appendChild(sneakyToolLabel);
 

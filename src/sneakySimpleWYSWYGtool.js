@@ -204,6 +204,30 @@ export class WYSIWYGEditor {
             el.addEventListener("drop", e => this._onDrop(e));
             el.addEventListener("dragenter", e => this._onDragEnter(e));
             el.addEventListener("dragleave", e => this._onDragLeave(e));
+            el.setAttribute('contenteditable', 'true');
+
+            el.addEventListener('input', (e) => {
+                //this._getHtmlBody();
+                // make it call the this._getHtmlBody() after a short delay
+                // to prevent losing focus on the element. 
+                // the delay needs to reset on every keypress 
+                if (this._getHtmlBodyTimeout) {
+                    clearTimeout(this._getHtmlBodyTimeout);
+                }
+                this._getHtmlBodyTimeout = setTimeout(() => {
+                    this._getHtmlBody();
+                }, 1000);
+            });
+
+            // prevent default for all click events
+            el.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+
+
+
         });
     }
 
@@ -326,6 +350,27 @@ export class WYSIWYGEditor {
                 await el.setAttribute("id", "title");
                 await el.setAttribute("setParentNode", "head");
             }
+        });
+
+        // remove the draggable and wysiwyg-id attributes
+        const allElements = await clone.querySelectorAll("*");
+        await allElements.forEach(async el => {
+            if (el.hasAttribute("draggable")) {
+                el.removeAttribute("draggable");
+            }
+            if (el.hasAttribute("data-wysiwyg-id")) {
+                el.removeAttribute("data-wysiwyg-id");
+            }
+        });
+        // remove all classes that start with wysiwyg
+        const allClasses = await clone.querySelectorAll("*");
+        await allClasses.forEach(async el => {
+            const classes = el.classList;
+            classes.forEach(async className => {
+                if (className.startsWith("wysiwyg")) {
+                    el.classList.remove(className);
+                }
+            });
         });
 
 

@@ -337,6 +337,8 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             input.addEventListener("change", async () => {
                 await writeSetting(setting.name, input.value);
             });
+
+            label.setAttribute("for", setting.name);
             dialogContent.appendChild(label);
             dialogContent.appendChild(input);
 
