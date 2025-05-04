@@ -202,7 +202,7 @@ class aiFiddleEditor {
 
 
 
-        const runBtn = makeButton('▶', 'Run', () => this.runProject());
+        const runBtn = makeButton('▶', 'Run', () => this.runProject("run"));
         const linkBtn = makeButton('🔗✎', 'Generate shareable link to load this project in the editor', () => this.copyEditorLink());
         const execBtn = makeButton('🔗▶', 'Generate shareable link to run project without the editor', () => this.copyRunOnlyLink());
 
@@ -633,7 +633,8 @@ class aiFiddleEditor {
 
 
 
-    async runProject() {
+    async runProject(mode) {
+        if (mode === 'run') this.sneakyToolCheckbox.checked = false;
         this.iframe.srcdoc = await this.generatePageContent();
         this.consolePanel.innerHTML = '';
     }
