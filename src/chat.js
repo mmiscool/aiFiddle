@@ -309,10 +309,17 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         // itterate over settings and create a input for each setting.
         // make it so that the setting value is writted immediately on change
         settings.forEach(setting => {
+            // make a span that will position the label and input side by side
+            const settingDiv = document.createElement("div");
+            settingDiv.className = "setting";
+            dialogContent.appendChild(settingDiv);
+
+
             const label = document.createElement("label");
             label.innerText = setting.name;
             // replace "llmConfig/" with "" in the label
             label.innerText = label.innerText.replace("llmConfig/", "");
+            label.innerText = label.innerText.replace(".bool", "");
             label.innerText = label.innerText.replace(".txt", "");
 
 
@@ -325,6 +332,10 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             } else if (setting.name.includes("bool")) {
                 input.type = "checkbox";
                 input.checked = setting.value === "true";
+                input.style.width = "20px";
+                //label.style.width = "300px";
+                label.style.display = "inline-block";
+                input.innerText = label.innerText;
                 input.addEventListener("change", async () => {
                     input.value = input.checked;
                 });
@@ -339,8 +350,17 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
             });
 
             label.setAttribute("for", setting.name);
-            dialogContent.appendChild(label);
-            dialogContent.appendChild(input);
+            if (setting.name.includes("bool")) {
+                settingDiv.appendChild(input);
+                settingDiv.appendChild(label);
+            } else if (setting.name.includes("prompt")) {
+                dialogContent.appendChild(label);
+                dialogContent.appendChild(input);
+            } else {
+                settingDiv.appendChild(label);
+                settingDiv.appendChild(input);
+            }
+
 
             // add an onchange event to the input
             input.addEventListener("change", async () => {
