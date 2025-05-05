@@ -204,7 +204,31 @@ export class WYSIWYGEditor {
             el.addEventListener("drop", e => this._onDrop(e));
             el.addEventListener("dragenter", e => this._onDragEnter(e));
             el.addEventListener("dragleave", e => this._onDragLeave(e));
-            el.setAttribute('contenteditable', 'true');
+            // prevent selecting text on elements in general
+            el.addEventListener("selectstart", e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+
+   
+
+            // set content editable to true when user double clicks on the element
+            el.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                el.setAttribute('contenteditable', 'true');
+                el.focus();
+            });
+            // remove content editable when user clicks outside the element
+            document.addEventListener('click', (e) => {
+                if (el.hasAttribute('contenteditable')) {
+                    el.removeAttribute('contenteditable');
+                }
+            });
+      
+
+
 
             el.addEventListener('input', (e) => {
                 //this._getHtmlBody();
