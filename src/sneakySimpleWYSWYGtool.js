@@ -196,6 +196,22 @@ export class WYSIWYGEditor {
 
 
     _applyDraggableAttributes(root) {
+        // add contextmenu event to the body
+        root.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this._removeContextMenu();
+        });
+        // add a click event to the body
+        root.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this._removeContextMenu();
+        });
+
+
+
+
         const allElements = root.querySelectorAll("*");
 
         allElements.forEach(el => {
@@ -256,7 +272,7 @@ export class WYSIWYGEditor {
                 e.preventDefault();
                 e.stopPropagation();
 
-                this._createContextMenu();
+                this._createContextMenu(el, e);
                 this._addContextMenuItems(el);
                 // Position the context menu while ensuring it doesn't go off-screen
                 const menuWidth = this.contextMenu.offsetWidth;
@@ -330,8 +346,14 @@ export class WYSIWYGEditor {
     }
 
 
-    _createContextMenu() {
+    _createContextMenu(el, e) {
         this._removeContextMenu();
+
+
+        e.preventDefault();
+        e.stopPropagation();
+
+
 
         this.contextMenu = document.createElement("div");
         this.contextMenu.className = "wysiwyg-context-menu";
@@ -421,7 +443,45 @@ export class WYSIWYGEditor {
             addItem("✏️ Edit Content", () => {
                 this._makeEditable(el);
             });
+
+            // add a new element
+            addItem("➕ Add Element", () => {
+                const tagName = prompt("Enter tag name (e.g., div, p, span)", "div");
+                if (tagName) {
+                    const newElement = document.createElement(tagName);
+                    newElement.textContent = "New Element";
+                    newElement.setAttribute("data-wysiwyg-id", crypto.randomUUID());
+                    newElement.setAttribute("draggable", "true");
+                    // milliseconds since 1970
+                    let tempId = Date.now();
+                    tempId = prompt("Enter new ID", tempId);
+                    if (tempId) {
+                        newElement.setAttribute("id", tempId);
+
+                        this._applyDraggableAttributes(newElement);
+                        el.appendChild(newElement);
+                        this._getHtmlBody();
+                    }
+                }
+            });
         };
+
+
+        this._addContextMenuItems(el);
+        // Position the context menu while ensuring it doesn't go off-screen
+        const menuWidth = this.contextMenu.offsetWidth;
+        const menuHeight = this.contextMenu.offsetHeight;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const x = Math.min(e.clientX, viewportWidth - menuWidth);
+        const y = Math.min(e.clientY, viewportHeight - menuHeight);
+        this.contextMenu.style.left = `${x}px`;
+        this.contextMenu.style.top = `${y}px`;
+        this.contextMenu.style.display = "block";
+
+
+
+
     }
 
     _makeEditable(el) {
