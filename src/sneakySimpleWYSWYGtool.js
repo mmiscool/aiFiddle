@@ -4,6 +4,8 @@ export class WYSIWYGEditor {
         this.draggedElement = null;
         this.dragGhost = null;
         this.dropPreview = null;
+        this.contextMenu = null;
+
         this._init();
     }
 
@@ -14,6 +16,13 @@ export class WYSIWYGEditor {
 
     _onDragStart(e) {
         this._destroyGhost(); // ensure no previous ghost remains
+
+        // test if the element is content editable
+        if (e.target.hasAttribute("contenteditable")) {
+            //e.preventDefault();
+            //e.stopPropagation();
+            return;
+        }
 
         this.draggedElement = e.target;
         e.dataTransfer.effectAllowed = "move";
@@ -191,6 +200,7 @@ export class WYSIWYGEditor {
 
         allElements.forEach(el => {
             if (["HTML", "HEAD", "SCRIPT", "STYLE", "META", "TITLE", "LINK"].includes(el.tagName)) return;
+            if (el.classList.contains("WYSIWYG-ignore")) return;
 
             if (!el.hasAttribute("data-wysiwyg-id")) {
                 el.setAttribute("data-wysiwyg-id", crypto.randomUUID());
@@ -205,53 +215,60 @@ export class WYSIWYGEditor {
             el.addEventListener("dragenter", e => this._onDragEnter(e));
             el.addEventListener("dragleave", e => this._onDragLeave(e));
             // prevent selecting text on elements in general
-            el.addEventListener("selectstart", e => {
-                e.preventDefault();
+            el.addEventListener("selectstart", async e => {
+                if (!el.hasAttribute('contenteditable')) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return
+                } else {
+                    e.stopPropagation();
+                }
+            });
+
+            // double click to make content editable
+            el.addEventListener("dblclick", (e) => {
+                this._makeEditable(el);
                 e.stopPropagation();
             });
 
-
-   
-
-            // set content editable to true when user double clicks on the element
-            el.addEventListener('dblclick', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                el.setAttribute('contenteditable', 'true');
-                el.focus();
-            });
-            // remove content editable when user clicks outside the element
-            document.addEventListener('click', (e) => {
+            //make a blur event to remove content editable
+            el.addEventListener('blur', (e) => {
                 if (el.hasAttribute('contenteditable')) {
                     el.removeAttribute('contenteditable');
                 }
             });
-      
 
-
-
-            el.addEventListener('input', (e) => {
-                //this._getHtmlBody();
-                // make it call the this._getHtmlBody() after a short delay
-                // to prevent losing focus on the element. 
-                // the delay needs to reset on every keypress 
-                if (this._getHtmlBodyTimeout) {
-                    clearTimeout(this._getHtmlBodyTimeout);
-                }
-                this._getHtmlBodyTimeout = setTimeout(() => {
-                    this._getHtmlBody();
-                }, 1000);
-            });
 
             // prevent default for all click events
             el.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
+                this._removeContextMenu();
             });
 
 
 
 
+
+
+            // Right-click context menu
+            el.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                this._createContextMenu();
+                this._addContextMenuItems(el);
+                // Position the context menu while ensuring it doesn't go off-screen
+                const menuWidth = this.contextMenu.offsetWidth;
+                const menuHeight = this.contextMenu.offsetHeight;
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const x = Math.min(e.clientX, viewportWidth - menuWidth);
+                const y = Math.min(e.clientY, viewportHeight - menuHeight);
+                this.contextMenu.style.left = `${x}px`;
+                this.contextMenu.style.top = `${y}px`;
+                this.contextMenu.style.display = "block";
+            });
         });
     }
 
@@ -313,6 +330,115 @@ export class WYSIWYGEditor {
     }
 
 
+    _createContextMenu() {
+        this._removeContextMenu();
+
+        this.contextMenu = document.createElement("div");
+        this.contextMenu.className = "wysiwyg-context-menu";
+        this.contextMenu.style.position = "absolute";
+        this.contextMenu.style.zIndex = "10001";
+        this.contextMenu.style.background = "#222";
+        this.contextMenu.style.color = "#fff";
+        this.contextMenu.style.border = "1px solid #555";
+        this.contextMenu.style.padding = "5px 0";
+        this.contextMenu.style.borderRadius = "5px";
+        this.contextMenu.style.display = "none";
+        this.contextMenu.style.minWidth = "120px";
+        this.contextMenu.style.boxShadow = "0 0 5px rgba(0,0,0,0.5)";
+        this.contextMenu.style.fontSize = "13px";
+
+        const addItem = (label, action) => {
+            const item = document.createElement("div");
+            item.textContent = label;
+            item.style.padding = "6px 10px";
+            item.style.cursor = "pointer";
+            item.onmouseenter = () => item.style.background = "#444";
+            item.onmouseleave = () => item.style.background = "transparent";
+            item.onclick = () => {
+                this._removeContextMenu();
+                action();
+            };
+            this.contextMenu.appendChild(item);
+        };
+
+        document.addEventListener("click", (el) => {
+            // el.preventDefault();
+            // el.stopPropagation();
+
+            this._removeContextMenu();
+        });
+
+
+        document.body.appendChild(this.contextMenu);
+
+        // Save for reuse
+        this._addContextMenuItems = (el) => {
+            this.contextMenu.innerHTML = "";
+            // add "WYSWYG-ignore" class to the the context menu
+            this.contextMenu.classList.add("WYSIWYG-ignore");
+
+
+            addItem("🗑 Delete", () => {
+                el.remove();
+                this._getHtmlBody();
+            });
+
+            addItem("✏️ Change ID", () => {
+                const currentId = el.id || "";
+                const newId = prompt("Enter new ID", currentId);
+                if (newId) {
+                    el.id = newId;
+                    this._getHtmlBody();
+                }
+            });
+
+            addItem("⬆️ Move Up", () => {
+                const parent = el.parentElement;
+                if (parent && el.previousElementSibling) {
+                    parent.insertBefore(el, el.previousElementSibling);
+                    this._getHtmlBody();
+                }
+            });
+
+            addItem("⬇️ Move Down", () => {
+                const parent = el.parentElement;
+                if (parent && el.nextElementSibling) {
+                    parent.insertBefore(el.nextElementSibling, el);
+                    this._getHtmlBody();
+                }
+            });
+
+            // move up one level to parent element 
+            addItem("🡴 Move Up One Level", () => {
+                const parent = el.parentElement;
+                if (parent && parent.parentElement) {
+                    parent.parentElement.insertBefore(el, parent);
+                    this._getHtmlBody();
+                }
+            });
+
+            // make element content editable
+            addItem("✏️ Edit Content", () => {
+                this._makeEditable(el);
+            });
+        };
+    }
+
+    _makeEditable(el) {
+        this._removeContextMenu();
+        el.setAttribute("contenteditable", "true");
+        el.focus();
+    }
+
+    //remove context menu
+    _removeContextMenu() {
+        if (this.contextMenu) {
+            this.contextMenu.remove();
+            this.contextMenu = null;
+        }
+    }
+
+
     async _getHtmlBody() {
         // Clone the full document element
         const clone = document.documentElement.cloneNode(true);
@@ -326,6 +452,13 @@ export class WYSIWYGEditor {
         await styles.forEach(async el => await el.remove());
 
 
+        // remove all elements that have the class WYSIWYG-ignore
+        const ignoreElements = await clone.querySelectorAll(".WYSIWYG-ignore");
+        await ignoreElements.forEach(async el => {
+            if (el.parentNode) {
+                el.parentNode.removeChild(el);
+            }
+        });
 
 
         // move all <link> elements to the head
@@ -385,6 +518,10 @@ export class WYSIWYGEditor {
             if (el.hasAttribute("data-wysiwyg-id")) {
                 el.removeAttribute("data-wysiwyg-id");
             }
+            if (el.hasAttribute("contenteditable")) {
+                el.removeAttribute("contenteditable");
+            }
+
         });
         // remove all classes that start with wysiwyg
         const allClasses = await clone.querySelectorAll("*");

@@ -27,7 +27,7 @@
     "openai": "^4.97.0",
     "parcel": "^2.14.4",
     "postcss": "^8.5.3",
-    "snipsplicer": "^1.0.10"
+    "snipsplicer": "^1.0.12"
   },
   "keywords": [
     "light-mode",
