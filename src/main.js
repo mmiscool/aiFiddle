@@ -645,19 +645,12 @@ class aiFiddleEditor {
         let returnString = "";
 
         let JSurlBlob = createModuleBlobURL(this.project.js + "\n\n//# sourceURL=injectedScript.js", 'application/javascript');
+        let primaryScriptTag = `<script type="module" src="${JSurlBlob}"></script>`;
         let CSSurlBlob = createModuleBlobURL(this.project.css, 'text/css');
 
 
-
-
-
         if (hijackDebugger) {
-            let sneakyCodeString = "";
-            if (this.sneakyToolCheckbox.checked == true) {
-                sneakyCodeString = sneakySimpleWYSWYGtool;
-            } else {
-                sneakyCodeString = "";
-            }
+
 
             returnString = `
         <html>
@@ -712,19 +705,11 @@ class aiFiddleEditor {
                         });
                     })();
                     
-                    ${sneakyCodeString}
+                    ${this.sneakyToolCheckbox.checked == true ? sneakySimpleWYSWYGtool : ""}
                 </script>
 
-                <script type="module" src="${JSurlBlob}"></script>
-                <style>
-                    .wysiwyg-dragging {
-                        opacity: 0.5;
-                    }
+                ${this.sneakyToolCheckbox.checked == true ? primaryScriptTag:""}
 
-                    .wysiwyg-drop-target {
-                        outline: 2px dashed #00aaff;
-                    }
-                </style>
 
             </body>
         </html>`;

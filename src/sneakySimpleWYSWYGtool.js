@@ -10,17 +10,15 @@ export class WYSIWYGEditor {
     }
 
     _init() {
-        this._applyDraggableAttributes(document.body);
         this._addStyles();
+        this._applyDraggableAttributes(document.body);
     }
 
     _onDragStart(e) {
         this._destroyGhost(); // ensure no previous ghost remains
 
         // test if the element is content editable
-        if (e.target.hasAttribute("contenteditable")) {
-            //e.preventDefault();
-            //e.stopPropagation();
+        if (e.target.hasAttribute('contenteditable')) {
             return;
         }
 
@@ -72,8 +70,8 @@ export class WYSIWYGEditor {
         const pointerY = e.clientY;
         const rect = dropTarget.getBoundingClientRect();
 
-        const width20 = rect.width * 0.2;
-        const height20 = rect.height * 0.2;
+        const width20 = rect.width * 0.3;
+        const height20 = rect.height * 0.3;
 
         const isTop = pointerY < rect.top + height20;
         const isBottom = pointerY > rect.bottom - height20;
@@ -111,6 +109,7 @@ export class WYSIWYGEditor {
 
     _onDragLeave(e) {
         const el = this._findNearestDraggable(e.target);
+        this._destroyGhost();
         this._clearHighlight(el);
     }
 
@@ -133,6 +132,7 @@ export class WYSIWYGEditor {
             this.dragGhost.remove();
         }
         this.dragGhost = null;
+        this._removeDropPreview()
         this._stopTrackingMouse();
     }
 
@@ -148,9 +148,6 @@ export class WYSIWYGEditor {
     _addStyles() {
         const style = document.createElement("style");
         style.textContent = `
-            .wysiwyg-dragging {
-                opacity: 0.4 !important;
-            }
             .wysiwyg-drop-target {
                 outline: 2px dashed #00aaff !important;
             }
@@ -184,7 +181,15 @@ export class WYSIWYGEditor {
                 border-radius: 4px;
                 user-select: none;
             }
+            
+            .wysiwyg-dragging {
+                opacity: 0.5 !important;
+            }
 
+            .wysiwyg-drop-target {
+                outline: 2px dashed #00aaff;
+            }
+             
         `;
 
         style.id = "wysiwyg-drag-drop-styles";
@@ -251,12 +256,24 @@ export class WYSIWYGEditor {
             el.addEventListener('blur', (e) => {
                 if (el.hasAttribute('contenteditable')) {
                     el.removeAttribute('contenteditable');
+
+                    this._getHtmlBody();
                 }
             });
 
 
             // prevent default for all click events
             el.addEventListener("click", e => {
+                // if (!el.isContentEditable) {
+                //     const editableElements = document.querySelectorAll('[contenteditable]');
+                //     if (editableElements.length > 0) {
+                //         editableElements.forEach(el => {
+                //             el.removeAttribute('contenteditable');
+                //         });
+                //         alert("saving the page");
+                //         this._getHtmlBody();
+                //     }
+                // }
                 e.preventDefault();
                 e.stopPropagation();
                 this._removeContextMenu();
@@ -269,8 +286,10 @@ export class WYSIWYGEditor {
 
             // Right-click context menu
             el.addEventListener("contextmenu", (e) => {
+                e.stopPropagation(); 
+                if (e.target.isContentEditable) return;
                 e.preventDefault();
-                e.stopPropagation();
+
 
                 this._createContextMenu(el, e);
                 this._addContextMenuItems(el);
@@ -290,6 +309,7 @@ export class WYSIWYGEditor {
 
     _onDrop(e) {
         e.preventDefault();
+        e.stopPropagation();
 
         let dropTarget = this._findNearestDraggable(e.target);
         if (!dropTarget || dropTarget === this.draggedElement) return;
@@ -298,8 +318,8 @@ export class WYSIWYGEditor {
         const pointerY = e.clientY;
         const rect = dropTarget.getBoundingClientRect();
 
-        const width20 = rect.width * 0.2;
-        const height20 = rect.height * 0.2;
+        const width20 = rect.width * 0.3;
+        const height20 = rect.height * 0.3;
 
         const isTop = pointerY < rect.top + height20;
         const isBottom = pointerY > rect.bottom - height20;
@@ -308,7 +328,26 @@ export class WYSIWYGEditor {
 
         const parent = dropTarget.parentNode;
 
-        if (this.draggedElement && dropTarget && parent) {
+        const tagFromPalette = e.dataTransfer.getData('text/plain');
+        if (tagFromPalette && !this.draggedElement) {
+            const newEl = document.createElement(tagFromPalette);
+            newEl.textContent = `New ${tagFromPalette}`;
+            newEl.setAttribute('id', Date.now());
+            newEl.setAttribute('data-wysiwyg-id', crypto.randomUUID());
+            this._applyDraggableAttributes(newEl);
+
+            if (isTop || isLeft) {
+                parent.insertBefore(newEl, dropTarget);
+            } else if (isBottom || isRight) {
+                if (dropTarget.nextSibling) {
+                    parent.insertBefore(newEl, dropTarget.nextSibling);
+                } else {
+                    parent.appendChild(newEl);
+                }
+            } else {
+                dropTarget.appendChild(newEl);
+            }
+        } else if (this.draggedElement && dropTarget && parent) {
             if (isTop || isLeft) {
                 parent.insertBefore(this.draggedElement, dropTarget);
             } else if (isBottom || isRight) {
@@ -486,9 +525,17 @@ export class WYSIWYGEditor {
 
     _makeEditable(el) {
         this._removeContextMenu();
-        el.setAttribute("contenteditable", "true");
+        el.setAttribute('contenteditable', "true");
         el.focus();
     }
+    _removeMakeEditable(el) {
+        if (el.hasAttribute('contenteditable')) {
+            el.removeAttribute('contenteditable');
+            this._getHtmlBody();
+        }
+    }
+
+
 
     //remove context menu
     _removeContextMenu() {
@@ -578,8 +625,8 @@ export class WYSIWYGEditor {
             if (el.hasAttribute("data-wysiwyg-id")) {
                 el.removeAttribute("data-wysiwyg-id");
             }
-            if (el.hasAttribute("contenteditable")) {
-                el.removeAttribute("contenteditable");
+            if (el.hasAttribute('contenteditable')) {
+                this._removeMakeEditable(el);
             }
 
         });
@@ -623,3 +670,117 @@ export class WYSIWYGEditor {
 
 // Usage
 const editor = new WYSIWYGEditor();
+
+createFloatingTagPalette();
+
+
+function createFloatingTagPalette(tags = null) {
+    if (!tags) {
+        tags = ['div', 'p', 'span', 'h1', 'h2', '-',
+            'table', 'tr', 'td', 'th',
+            '-', 'form', 'button', 'input', 'textarea', 'select', 'meter', 'progress',
+            '-', 'details', 'summary', 'figure', 'figcaption', 'blockquote', 'hr', 'canvas',
+            '-', 'section', 'article', 'nav', 'aside', 'ul', 'ol', 'li',
+        ];
+    }
+
+    const panel = document.createElement('div');
+    panel.className = 'WYSIWYG-ignore';
+    panel.style.position = 'fixed';
+    panel.style.top = '50px';
+    panel.style.left = '20px';
+    panel.style.width = '200px';
+    panel.style.height = '200px';
+    panel.style.zIndex = '99999';
+    panel.style.background = '#111';
+    panel.style.color = '#fff';
+    panel.style.border = '1px solid #555';
+    panel.style.borderRadius = '8px';
+    panel.style.padding = '2px';
+    panel.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+    panel.style.cursor = 'move';
+    panel.style.display = 'inline-flex';
+    panel.style.flexWrap = 'wrap';
+    panel.style.overflowY = 'scroll';
+
+    // Load position from local storage if available
+    const savedPosition = localStorage.getItem('floating-tag-panel-position');
+    if (savedPosition) {
+        const { left, top } = JSON.parse(savedPosition);
+        panel.style.left = left;
+        panel.style.top = top;
+    }
+    // add a span to the top of the panel
+    const title = document.createElement('span');
+    title.textContent = 'Drag to insert:';
+    title.style.width = '100%';
+    title.style.fontSize = '14px';
+    title.style.fontWeight = 'bold';
+    title.style.margin = '4px';
+    title.style.color = '#00ff99';
+    title.style.cursor = 'default';
+    title.style.userSelect = 'none';
+    title.style.pointerEvents = 'none';
+    panel.appendChild(title);
+
+
+
+    panel.setAttribute('id', 'floating-tag-panel');
+
+    tags.forEach(tag => {
+        if (tag === '-') {
+            const separator = document.createElement('div');
+            separator.style.width = '100%';
+            separator.style.height = '1px';
+            separator.style.background = '#333';
+            separator.style.margin = '4px 0';
+            panel.appendChild(separator);
+            return;
+        }
+        const tagBox = document.createElement('div');
+        tagBox.textContent = `${tag}`;
+        tagBox.draggable = true;
+        tagBox.dataset.insertTag = tag;
+        tagBox.className = 'WYSIWYG-ignore';
+        tagBox.style.margin = '1px';
+        tagBox.style.padding = '4px 6px';
+        tagBox.style.background = '#222';
+        tagBox.style.border = '1px solid #333';
+        tagBox.style.borderRadius = '4px';
+        tagBox.style.cursor = 'grab';
+        tagBox.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', tag);
+        });
+        panel.appendChild(tagBox);
+    });
+
+    makePanelMovable(panel);
+    document.body.appendChild(panel);
+}
+
+function makePanelMovable(panel) {
+    let offsetX, offsetY, isDragging = false;
+
+    panel.addEventListener('mousedown', (e) => {
+        if (e.target !== panel) return;
+        isDragging = true;
+        offsetX = e.clientX - panel.getBoundingClientRect().left;
+        offsetY = e.clientY - panel.getBoundingClientRect().top;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        panel.style.left = `${e.clientX - offsetX}px`;
+        panel.style.top = `${e.clientY - offsetY}px`;
+        // write the position to local storage
+        localStorage.setItem('floating-tag-panel-position', JSON.stringify({ left: panel.style.left, top: panel.style.top }));
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+}
