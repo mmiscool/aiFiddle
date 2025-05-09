@@ -104,7 +104,8 @@ export class conversation {
             {
                 name: 'X',
                 baseURL: 'https://api.x.ai/v1'
-            }
+            },
+
         ];
 
         
