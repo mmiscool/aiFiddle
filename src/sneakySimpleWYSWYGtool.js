@@ -780,7 +780,7 @@ function createFloatingTagPalette(tags = null) {
     panel.style.position = 'fixed';
     panel.style.top = '50px';
     panel.style.left = '20px';
-    panel.style.width = '200px';
+    panel.style.width = '350px';
     panel.style.height = '200px';
     panel.style.zIndex = '99999';
     panel.style.background = '#111';
@@ -793,6 +793,8 @@ function createFloatingTagPalette(tags = null) {
     panel.style.display = 'inline-flex';
     panel.style.flexWrap = 'wrap';
     panel.style.overflowY = 'scroll';
+    // font size
+    panel.style.fontSize = '12px';
 
     // Load position from local storage if available
     const savedPosition = localStorage.getItem('floating-tag-panel-position');
@@ -805,7 +807,6 @@ function createFloatingTagPalette(tags = null) {
     const title = document.createElement('span');
     title.textContent = 'Drag to insert:';
     title.style.width = '100%';
-    title.style.fontSize = '14px';
     title.style.fontWeight = 'bold';
     title.style.margin = '4px';
     title.style.color = '#00ff99';
