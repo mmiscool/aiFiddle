@@ -708,7 +708,7 @@ class aiFiddleEditor {
                     ${this.sneakyToolCheckbox.checked == true ? sneakySimpleWYSWYGtool : ""}
                 </script>
 
-                ${this.sneakyToolCheckbox.checked == true ? primaryScriptTag:""}
+                ${this.sneakyToolCheckbox.checked == false ? primaryScriptTag:""}
 
 
             </body>

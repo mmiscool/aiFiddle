@@ -1,0 +1,66 @@
+.wysiwyg-drop-target {
+    all: initial;
+    outline: 2px dashed #00aaff !important;
+}
+
+.wysiwyg-ghost {
+    all: initial;
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0.7;
+    transform: scale(0.95);
+    background: #222;
+    color: #fff;
+    padding: 5px;
+    border: 1px solid #00aaff;
+    border-radius: 4px;
+    max-width: 300px;
+    font-size: 0.9em;
+}
+
+
+.wysiwyg-drop-preview {
+    all: initial;
+    position: absolute;
+    pointer-events: none;
+    z-index: 9999;
+    background: rgba(0, 255, 153, 0.2);
+    border: 2px dashed #00ff99;
+    color: #00ff99;
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    user-select: none;
+}
+
+.wysiwyg-dragging {
+    all: initial;
+    opacity: 0.5 !important;
+}
+
+.wysiwyg-drop-target {
+    all: initial;
+    outline: 2px dashed #00aaff;
+}
+
+.wysiwyg-outline {
+    all: initial;
+    position: relative;
+    /* Make sure the parent is positioned */
+}
+
+.wysiwyg-outline:hover::after {
+    all: initial;
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px dashed yellow;
+    pointer-events: none;
+    z-index: 9999;
+}

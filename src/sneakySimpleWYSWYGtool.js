@@ -148,48 +148,139 @@ export class WYSIWYGEditor {
     _addStyles() {
         const style = document.createElement("style");
         style.textContent = `
-            .wysiwyg-drop-target {
-                outline: 2px dashed #00aaff !important;
-            }
-            .wysiwyg-ghost {
-                position: fixed;
-                z-index: 10000;
-                pointer-events: none;
-                opacity: 0.7;
-                transform: scale(0.95);
-                background: #222;
-                color: #fff;
-                padding: 5px;
-                border: 1px solid #00aaff;
-                border-radius: 4px;
-                max-width: 300px;
-                font-size: 0.9em;
-            }
+                            .wysiwyg-drop-target {
+                                outline: 2px dashed #00aaff !important;
+                            }
+                            .wysiwyg-ghost {
+                                position: fixed;
+                                z-index: 10000;
+                                pointer-events: none;
+                                opacity: 0.7;
+                                transform: scale(0.95);
+                                background: #222;
+                                color: #fff;
+                                padding: 5px;
+                                border: 1px solid #00aaff;
+                                border-radius: 4px;
+                                max-width: 300px;
+                                font-size: 0.9em;
+                            }
 
 
-            .wysiwyg-drop-preview {
-                position: absolute;
-                pointer-events: none;
-                z-index: 9999;
-                background: rgba(0, 255, 153, 0.2);
-                border: 2px dashed #00ff99;
-                color: #00ff99;
-                text-align: center;
-                font-style: italic;
-                font-size: 12px;
-                padding: 2px 6px;
-                border-radius: 4px;
-                user-select: none;
-            }
-            
-            .wysiwyg-dragging {
-                opacity: 0.5 !important;
-            }
+                            .wysiwyg-drop-preview {
+                                position: absolute;
+                                pointer-events: none;
+                                z-index: 9999;
+                                background: rgba(0, 255, 153, 0.2);
+                                border: 2px dashed #00ff99;
+                                color: #00ff99;
+                                text-align: center;
+                                font-style: italic;
+                                font-size: 12px;
+                                padding: 2px 6px;
+                                border-radius: 4px;
+                                user-select: none;
+                            }
 
-            .wysiwyg-drop-target {
-                outline: 2px dashed #00aaff;
-            }
-             
+                            .wysiwyg-dragging {
+                                opacity: 0.5 !important;
+                            }
+
+                            .wysiwyg-drop-target {
+                                outline: 2px dashed #00aaff;
+                            }
+
+
+
+                            .wysiwyg-outline {
+                                position: relative;
+                                /* Make sure the parent is positioned */
+                            }
+
+                            .wysiwyg-outline:hover::after {
+                                content: '';
+                                position: absolute;
+                                top: -2px;
+                                left: -2px;
+                                right: -2px;
+                                bottom: -2px;
+                                border: 1px dashed yellow;
+                                pointer-events: none;
+                                z-index: 9999;
+                            }
+
+
+
+                            .wysiwyg-context-menu  * {
+                                all: initial;
+                                box-sizing: border-box;
+                                width: 100%;
+                                margin: 0;
+                                padding: 0;
+                                border: none;
+                                background: none;
+                                color: inherit;
+                                font: inherit;
+                                                                flex-direction: column;
+                                flex-wrap: wrap;
+                                display: flex;
+                            }
+
+
+ 
+                            .wysiwyg-context-menu {
+                                position: absolute;
+                                z-index: 10001;
+                                background: #222;
+                                color: #fff;
+                                border: 1px solid #555;
+                                padding: 5px 0;
+                                border-radius: 5px;
+                                display: none;
+                                min-width: 120px;
+                                box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+                                font-size: 13px;
+                                font-family: monospace;
+                                flex-direction: column;
+                                flex-wrap: wrap;
+                                display: flex;
+                            }
+
+                            WYSIWYG-ignore{
+                                    position: fixed;
+                                    top: 50px;
+                                    left: 20px;
+                                    width: 90%;
+                                    height: 200px;
+                                    z-index: 99999;
+                                    background: #111;
+                                    color: #fff;
+                                    border: 1px solid #555;
+                                    border-radius: 8px;
+                                    padding: 2px;
+                                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                                    cursor: move;
+                                    /* display: inline-flex; */ /* Uncomment if needed */
+                                    flex-wrap: wrap;
+                                    overflow-y: scroll;
+                                    font-family: monospace;
+                                    display: flex;
+                                    flex-direction: row;
+                                    flex-wrap: wrap;
+                                }
+
+                                WYSIWYG-ignore > *{
+                                    flex: 0 0 auto;
+                                    margin: 2px;
+                                    padding: 4px 6px;
+                                    background: #222;
+                                    border: 1px solid #333;
+                                    border-radius: 4px;
+                                    cursor: grab;
+                                    display: flex;
+                                    flex-direction: row;
+                                    flex-wrap: wrap;
+                                }
         `;
 
         style.id = "wysiwyg-drag-drop-styles";
@@ -214,8 +305,11 @@ export class WYSIWYGEditor {
             this._removeContextMenu();
         });
 
+        document.body.addEventListener("drop", e => this._onDrop(e));
+        document.body.addEventListener("dragend", () => this._onDragEnd()); // ✅ NEW cleanup hook
+        document.body.addEventListener("dragover", e => this._onDragOver(e));
 
-
+        document.body.setAttribute("data-wysiwyg-id", crypto.randomUUID());
 
         const allElements = root.querySelectorAll("*");
 
@@ -246,6 +340,10 @@ export class WYSIWYGEditor {
                 }
             });
 
+
+            el.classList.add("wysiwyg-outline");
+
+
             // double click to make content editable
             el.addEventListener("dblclick", (e) => {
                 this._makeEditable(el);
@@ -264,46 +362,41 @@ export class WYSIWYGEditor {
 
             // prevent default for all click events
             el.addEventListener("click", e => {
-                // if (!el.isContentEditable) {
-                //     const editableElements = document.querySelectorAll('[contenteditable]');
-                //     if (editableElements.length > 0) {
-                //         editableElements.forEach(el => {
-                //             el.removeAttribute('contenteditable');
-                //         });
-                //         alert("saving the page");
-                //         this._getHtmlBody();
-                //     }
-                // }
                 e.preventDefault();
                 e.stopPropagation();
                 this._removeContextMenu();
             });
 
 
-
+            this._addContextMenuItems(el);
 
 
 
             // Right-click context menu
-            el.addEventListener("contextmenu", (e) => {
-                e.stopPropagation(); 
-                if (e.target.isContentEditable) return;
-                e.preventDefault();
+
+        });
+    }
+
+    // add context menu item
+    _addContextMenuItems(el) {
+        el.addEventListener("contextmenu", (e) => {
+            e.stopPropagation();
+            if (e.target.isContentEditable) return;
+            e.preventDefault();
 
 
-                this._createContextMenu(el, e);
-                this._addContextMenuItems(el);
-                // Position the context menu while ensuring it doesn't go off-screen
-                const menuWidth = this.contextMenu.offsetWidth;
-                const menuHeight = this.contextMenu.offsetHeight;
-                const viewportWidth = window.innerWidth;
-                const viewportHeight = window.innerHeight;
-                const x = Math.min(e.clientX, viewportWidth - menuWidth);
-                const y = Math.min(e.clientY, viewportHeight - menuHeight);
-                this.contextMenu.style.left = `${x}px`;
-                this.contextMenu.style.top = `${y}px`;
-                this.contextMenu.style.display = "block";
-            });
+            this._createContextMenu(el, e);
+            this._addContextMenuItems(el);
+            // Position the context menu while ensuring it doesn't go off-screen
+            const menuWidth = this.contextMenu.offsetWidth;
+            const menuHeight = this.contextMenu.offsetHeight;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const x = Math.min(e.clientX, viewportWidth - menuWidth);
+            const y = Math.min(e.clientY, viewportHeight - menuHeight);
+            this.contextMenu.style.left = `${x}px`;
+            this.contextMenu.style.top = `${y}px`;
+            this.contextMenu.style.display = "block";
         });
     }
 
@@ -391,8 +484,8 @@ export class WYSIWYGEditor {
 
         e.preventDefault();
         e.stopPropagation();
-
-
+        const shadowDiv = document.createElement("div");
+        const shadow = shadowDiv.attachShadow({ mode: 'open' });
 
         this.contextMenu = document.createElement("div");
         this.contextMenu.className = "wysiwyg-context-menu";
@@ -423,9 +516,6 @@ export class WYSIWYGEditor {
         };
 
         document.addEventListener("click", (el) => {
-            // el.preventDefault();
-            // el.stopPropagation();
-
             this._removeContextMenu();
         });
 
@@ -676,8 +766,9 @@ createFloatingTagPalette();
 
 function createFloatingTagPalette(tags = null) {
     if (!tags) {
-        tags = ['div', 'p', 'span', 'h1', 'h2', '-',
-            'table', 'tr', 'td', 'th',
+        tags = [
+            '-', 'div', 'p', 'span', 'h1', 'h2', 'br', 'hr', 'strong', 'em',
+            '-', 'table', 'tr', 'td', 'th',
             '-', 'form', 'button', 'input', 'textarea', 'select', 'meter', 'progress',
             '-', 'details', 'summary', 'figure', 'figcaption', 'blockquote', 'hr', 'canvas',
             '-', 'section', 'article', 'nav', 'aside', 'ul', 'ol', 'li',
