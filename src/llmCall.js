@@ -1,4 +1,5 @@
 import { OpenAI } from "openai";
+import { GoogleGenAI } from "@google/genai";
 
 
 
@@ -54,7 +55,7 @@ async function checkForKey(key) {
 }
 
 
-export async function replaceSettingIfNotFound(key, value) {
+export async function replaceSettingIfNotFound(key, value, skipConfirmOverwrite = false) {
     // check if the key exists in local storage
     const existingValue = await readSetting(key);
     if (existingValue === undefined || existingValue === null || existingValue === "") {
@@ -62,8 +63,12 @@ export async function replaceSettingIfNotFound(key, value) {
         await writeSetting(key, value);
     } else {
         if (await readSetting(key) !== value) {
-            const answer = await confirm("The default system prompt has been updated. \n Would you like to update your modifed prompt?")
-            if (answer) await writeSetting(key, value);
+            if (!skipConfirmOverwrite) {
+                const answer = await confirm("The default system prompt has been updated. \n Would you like to update your modified prompt?")
+                if (answer) await writeSetting(key, value);
+            } else {
+                await writeSetting(key, value);
+            }
         }
     }
 }
@@ -105,10 +110,14 @@ export class conversation {
                 name: 'X',
                 baseURL: 'https://api.x.ai/v1'
             },
+            {
+                name: 'Google Gemini',
+                baseURL: 'https://api.google.com/v1'
+            }
 
         ];
 
-        
+
     }
 
 
@@ -136,9 +145,65 @@ export class conversation {
         return this.messages[this.messages.length - 1].content;
     }
     async callLLM(addResponse = true, tempMessageDiv = null) {
+        let llmResponse = '';
+        if (this.service === "Google Gemini") {
+            const googleGenAI = new GoogleGenAI({
+                apiKey: await readSetting(`llmConfig/${this.service}-api-key.txt`),
+                dangerouslyAllowBrowser: true,
+            });
 
-        let llmResponse = await this.getOpenAIResponse(tempMessageDiv);
-        llmResponse = await llmResponse.trim();
+
+            // extract all the system prompts from the messages and concatenate them into a single string
+            let systemPrompts = "";
+            for (const message of this.messages) {
+                if (message.role === 'system') {
+                    systemPrompts += message.content + "\n";
+                }
+            }
+
+            // take all the user messages excluding system messages and concatenate them into a single string
+            let userMessages = "";
+            for (const message of this.messages) {
+                if (message.role === 'user') {
+                    userMessages += message.content + "\n-----------------------------------------------------\n";
+                }
+            }
+
+            //const ai = new GoogleGenAI({ apiKey: "GEMINI_API_KEY" });
+            const ai = new GoogleGenAI({
+                apiKey: await readSetting(`llmConfig/${this.service}-api-key.txt`),
+                dangerouslyAllowBrowser: true,
+            });
+
+
+
+            const response = await ai.models.generateContentStream({
+                model: this.modelName,
+                contents: userMessages,
+                config: {
+                    systemInstruction: systemPrompts,
+                },
+            });
+
+
+            llmResponse = '';
+            for await (const chunk of response) {
+                tempMessageDiv.innerText = llmResponse;
+                // get the dom parent of the tempMessageDiv
+                const parent = tempMessageDiv.parentElement;
+                //console.log('parent:', parent); // Debugging line
+                // scroll the parent to the bottom
+                parent.scrollTop = parent.scrollHeight;
+                llmResponse += chunk.text;
+                //console.log(chunk.text);
+            }
+
+        } else {
+            llmResponse = await this.getOpenAIResponse(tempMessageDiv);
+            llmResponse = await llmResponse.trim();
+        }
+
+
         if (addResponse) await this.addMessage({ role: 'assistant', content: llmResponse, hidden: false });
 
 
@@ -246,6 +311,11 @@ export class conversation {
         const allModels = [];
         // iterate over all the services and get the models for each service
         for (let i = 0; i < this.llmServices.length; i++) {
+            // check if the model is from google
+            if (this.llmServices[i].name === "Google Gemini") {
+                continue;
+            }
+
             const service = this.llmServices[i].name;
             const apiKey = await readSetting(`llmConfig/${service}-api-key.txt`);
             const baseURL = this.llmServices[i].baseURL;
@@ -267,9 +337,27 @@ export class conversation {
             return 0;
         });
 
-        //alert(await JSON.stringify(allModels, null, 2));
 
-        // console.log('allModels:', allModels); // Debugging line
+        // manually add the google models
+        const geminiModels = [
+            "Google Gemini|gemini-2.5-pro-preview-05-06",
+            "Google Gemini|gemini-2.5-pro-exp-03-25",
+            "Google Gemini|gemini-2.5-flash-preview-04-17",
+            "Google Gemini|gemini-2.0-flash",
+            "Google Gemini|gemini-2.0-flash-lite",
+            "Google Gemini|gemini-2.0-flash-preview-image-generation",
+            "Google Gemini|gemini-2.0-flash-live-001",
+            "Google Gemini|gemini-1.5-pro",
+            "Google Gemini|gemini-1.5-flash",
+            "Google Gemini|gemini-1.5-flash-8b",
+            "Google Gemini|gemini-1.0-ultra",
+            "Google Gemini|gemini-1.0-pro",
+            "Google Gemini|gemini-1.0-nano"
+        ];
+
+        await allModels.push(...geminiModels)
+
+
         return allModels;
     }
     async setModel(model = this.model) {

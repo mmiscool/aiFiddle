@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@google/genai": "^0.13.0",
     "@parcel/config-default": "^2.14.4",
     "escodegen": "^2.1.0",
     "esprima-next": "^6.0.3",

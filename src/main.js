@@ -189,7 +189,7 @@ class aiFiddleEditor {
         this.sneakyToolCheckbox.style.cursor = 'pointer';
         this.sneakyToolCheckbox.style.width = '20px';
         this.sneakyToolCheckbox.style.height = '20px';
-        this.sneakyToolCheckbox.checked = false;
+        this.sneakyToolCheckbox.checked = true;
         this.sneakyToolCheckbox.title = 'Include WYSIWYG tool';
         this.sneakyToolCheckbox.onclick = () => {
             if (this.sneakyToolCheckbox.checked) this.runProject();

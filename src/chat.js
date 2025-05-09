@@ -40,7 +40,8 @@ export class ChatUI extends conversation {
         //await replaceSettingIfNotFound(`llm/auto_apply_code_changes.bool`, "false");
         await readSetting(`llm/auto_apply_code_changes.bool`);
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
-        await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini");
+        //await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini", false);
+        await readSetting(`llm/default_model`);
 
         //await this.createConversationUI();
         await this.createSettingsUI();
