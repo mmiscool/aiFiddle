@@ -58,7 +58,7 @@ export async function replaceSettingIfNotFound(key, value) {
     // check if the key exists in local storage
     const existingValue = await readSetting(key);
     if (existingValue === undefined || existingValue === null || existingValue === "") {
-        //alert(`Key ${key} not found in localStorage. Creating a new key.`);
+        alert(`Key ${key} not found in localStorage. Creating a new key.`);
         await writeSetting(key, value);
     } else {
         if (await readSetting(key) !== value) {
@@ -188,15 +188,15 @@ export class conversation {
 
         for await (const chunk of resultStream) {
             const content = chunk.choices[0]?.delta?.content || '';
-            await console.log(content); // Real-time printing to console
+            //await console.log(content); // Real-time printing to console
             responseText += content;
             if (tempMessageDiv) {
-                console.log('tempMessageDiv:', tempMessageDiv.parent); // Debugging line
+                //console.log('tempMessageDiv:', tempMessageDiv.parent); // Debugging line
 
                 tempMessageDiv.innerText = responseText;
                 // get the dom parent of the tempMessageDiv
                 const parent = tempMessageDiv.parentElement;
-                console.log('parent:', parent); // Debugging line
+                //console.log('parent:', parent); // Debugging line
                 // scroll the parent to the bottom
                 parent.scrollTop = parent.scrollHeight;
             }
@@ -277,9 +277,6 @@ export class conversation {
         const [service, modelName] = model.split('|');
         this.service = service;
         this.modelName = modelName;
-        //console.log('model:', model);
-        //console.log('service:', service);
-        //console.log('modelName:', modelName);
     }
 }
 

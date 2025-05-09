@@ -6,12 +6,13 @@
 | esprima-next                      | BSD-2-Clause | 6.0.3             | git+https://github.com/node-projects/esprima-next.git      |
 | estraverse                        | BSD-2-Clause | 5.3.0             | git+ssh://git@github.com/estools/estraverse.git            |
 | highlight.js                      | BSD-3-Clause | 11.11.1           | git://github.com/highlightjs/highlight.js.git              |
-| linkedom                          | ISC          | 0.18.9            | git+https://github.com/WebReflection/linkedom.git          |
+| linkedom                          | ISC          | 0.18.10           | git+https://github.com/WebReflection/linkedom.git          |
 | marked                            | MIT          | 15.0.11           | git://github.com/markedjs/marked.git                       |
 | monaco-editor                     | MIT          | 0.52.2            | https://github.com/microsoft/monaco-editor                 |
-| openai                            | Apache-2.0   | 4.96.0            | https://github.com/openai/openai-node.git                  |
+| openai                            | Apache-2.0   | 4.97.0            | https://github.com/openai/openai-node.git                  |
 | parcel                            | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
 | postcss                           | MIT          | 8.5.3             | git+https://github.com/postcss/postcss.git                 |
+| snipsplicer                       | MIT          | 1.0.12            | git+https://github.com/mmiscool/snipsplicer.git            |
 | @parcel/core                      | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
 | @parcel/transformer-inline-string | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |
 | @parcel/transformer-js            | MIT          | 2.14.4            | git+https://github.com/parcel-bundler/parcel.git           |

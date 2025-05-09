@@ -37,7 +37,8 @@ export class ChatUI extends conversation {
             if (answer) await writeSetting(`prompts/system.md`, system_prompt)
 
         }
-        await replaceSettingIfNotFound(`llm/auto_execute_code.bool`, "false");
+        //await replaceSettingIfNotFound(`llm/auto_apply_code_changes.bool`, "false");
+        await readSetting(`llm/auto_apply_code_changes.bool`);
         await replaceSettingIfNotFound(`prompts/system.md`, system_prompt);
         await replaceSettingIfNotFound(`llm/default_model`, "openai|gpt-4o-mini");
 
@@ -147,14 +148,14 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         `
         if (message) {
             await this.updateConversationDynamicContent();
-            await this.renderConversationMessages();
+            await this.renderConversationMessages(false);
             await super.addMessage({ role: "user", content: message, hidden: false, temp: false });
             await this.addMessageDiv({ role: "user", content: message, hidden: false, temp: false });
             const tempMessageDiv = await this.addMessageDiv({ role: "user", content: message, hidden: false, temp: false });
             this.messageInput.value = "";
 
             await super.callLLM(true, tempMessageDiv);
-            await this.renderConversationMessages();
+            await this.renderConversationMessages(true);
             console.log(this.messages);
         }
     }
@@ -173,7 +174,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         return true
     }
 
-    async renderConversationMessages() {
+    async renderConversationMessages(autoApply = false) {
         console.log("Rendering conversation messages");
         console.log(this.titleElement);
         this.titleElement.innerText = this.title;
@@ -191,15 +192,22 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         for (let i = 0; i < this.messages.length; i++) {
             const message = this.messages[i];
 
+            // is this the last message?
+            let autoApplyChanges = false;
+            //alert(i + " " + this.messages.length);
+            if (i === this.messages.length - 1) {
+                if (await readSetting(`llm/auto_apply_code_changes.bool`) === "true" && autoApply) autoApplyChanges = true;
+            }
 
-            await this.addMessageDiv(message, i === this.messages.length - 1);
+
+            await this.addMessageDiv(message, autoApplyChanges);
         }
 
 
     }
 
 
-    async addMessageDiv(message, isLastMessage = false) {
+    async addMessageDiv(message, autoApplyChanges = false) {
         const messageDiv = document.createElement("div");
         await this.topArea.appendChild(messageDiv);
         if (message.hidden) {
@@ -214,7 +222,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         }
         this.topArea.scrollTop = this.topArea.scrollHeight;
 
-        await renderMarkdown(message.content, messageDiv, isLastMessage);
+        await renderMarkdown(message.content, messageDiv, autoApplyChanges);
 
         //console.log("Message Div: ", messageDiv);
         return messageDiv;
@@ -306,8 +314,8 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
         });
 
 
-        // itterate over settings and create a input for each setting.
-        // make it so that the setting value is writted immediately on change
+        // iterate over settings and create a input for each setting.
+        // make it so that the setting value is written immediately on change
         settings.forEach(setting => {
             // make a span that will position the label and input side by side
             const settingDiv = document.createElement("div");
@@ -376,7 +384,7 @@ Do not regenrated the whole pice of code from scratch each time excecpt for CSS.
 
 
 
-async function renderMarkdown(md, targetElement, isLastMessage = false) {
+async function renderMarkdown(md, targetElement, autoApplyChanges = false) {
     const html = await marked.parse(md, {
         highlight: async (code, lang) => {
             return hljs.highlightAuto(code, [lang]).value;
@@ -386,10 +394,8 @@ async function renderMarkdown(md, targetElement, isLastMessage = false) {
     targetElement.innerHTML = html;
     targetElement.classList.add("rendered-markdown");
 
-    let auto_execute_code = false;
-    if (await readSetting(`llm/auto_execute_code.bool`) === "true") auto_execute_code = true;
 
-    await enhanceCodeBlocks(targetElement, auto_execute_code);
+    await enhanceCodeBlocks(targetElement, autoApplyChanges);
 }
 
 async function enhanceCodeBlocks(container, autoExicute = false) {

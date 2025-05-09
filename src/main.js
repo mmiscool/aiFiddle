@@ -428,7 +428,6 @@ class aiFiddleEditor {
 
                 await this.editors['html'].trigger(`anyString`, 'editor.action.formatDocument');
                 await this.applyChanges('html', newHTML);
-                //alert(newHTML)
                 return
             }
             console.log('e.data type:', typeof e.data, Array.isArray(e.data));
@@ -531,7 +530,7 @@ class aiFiddleEditor {
         await this.switchTab(language);
         await this.editors[language].setValue(result);
         await this.saveEditorValues();
-        if (await readSetting('llm/auto_execute_code.bool') == "true") await this.runProject();
+        if (await readSetting('llm/auto_apply_code_changes.bool') == "true") await this.runProject();
     }
 
 
