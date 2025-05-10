@@ -227,7 +227,7 @@ export class WYSIWYGEditor {
                             }
 
 
- 
+                        /*
                             .wysiwyg-context-menu {
                                 position: absolute;
                                 z-index: 10001;
@@ -246,41 +246,16 @@ export class WYSIWYGEditor {
                                 display: flex;
                             }
 
-                            WYSIWYG-ignore{
-                                    position: fixed;
-                                    top: 50px;
-                                    left: 20px;
-                                    width: 90%;
-                                    height: 200px;
-                                    z-index: 99999;
-                                    background: #111;
-                                    color: #fff;
-                                    border: 1px solid #555;
-                                    border-radius: 8px;
-                                    padding: 2px;
-                                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-                                    cursor: move;
-                                    /* display: inline-flex; */ /* Uncomment if needed */
-                                    flex-wrap: wrap;
-                                    overflow-y: scroll;
-                                    font-family: monospace;
-                                    display: flex;
-                                    flex-direction: row;
-                                    flex-wrap: wrap;
-                                }
 
-                                WYSIWYG-ignore > *{
-                                    flex: 0 0 auto;
-                                    margin: 2px;
-                                    padding: 4px 6px;
-                                    background: #222;
-                                    border: 1px solid #333;
-                                    border-radius: 4px;
-                                    cursor: grab;
-                                    display: flex;
-                                    flex-direction: row;
-                                    flex-wrap: wrap;
-                                }
+                                
+                            .WYSIWYG-tagBox{
+                                all: initial;
+                                box-sizing: border-box;
+                                padding: 4px 6px;
+                                margin: 0;
+                            }
+
+                            */
         `;
 
         style.id = "wysiwyg-drag-drop-styles";
@@ -306,7 +281,7 @@ export class WYSIWYGEditor {
         });
 
         document.body.addEventListener("drop", e => this._onDrop(e));
-        document.body.addEventListener("dragend", () => this._onDragEnd()); // ✅ NEW cleanup hook
+        document.body.addEventListener("dragend", e => this._onDragEnd(e)); // ✅ NEW cleanup hook
         document.body.addEventListener("dragover", e => this._onDragOver(e));
 
         document.body.setAttribute("data-wysiwyg-id", crypto.randomUUID());
@@ -467,7 +442,8 @@ export class WYSIWYGEditor {
     }
 
 
-    _onDragEnd() {
+    _onDragEnd(e) {
+        e.stopPropagation();
         this._removeDropPreview();
         this._destroyGhost();
 
@@ -777,10 +753,11 @@ function createFloatingTagPalette(tags = null) {
 
     const panel = document.createElement('div');
     panel.className = 'WYSIWYG-ignore';
+    panel.style.all = 'initial';
     panel.style.position = 'fixed';
     panel.style.top = '50px';
     panel.style.left = '20px';
-    panel.style.width = '350px';
+    panel.style.width = '80%';
     panel.style.height = '220px';
     panel.style.zIndex = '99999';
     panel.style.background = '#111';
@@ -794,7 +771,7 @@ function createFloatingTagPalette(tags = null) {
     panel.style.flexWrap = 'wrap';
     panel.style.overflowY = 'scroll';
     // font size
-    panel.style.fontSize = '12px';
+    panel.style.fontSize = '16px';
 
     // Load position from local storage if available
     const savedPosition = localStorage.getItem('floating-tag-panel-position');
@@ -808,7 +785,7 @@ function createFloatingTagPalette(tags = null) {
     title.textContent = 'Drag to insert:';
     title.style.width = '100%';
     title.style.fontWeight = 'bold';
-    title.style.margin = '4px';
+    title.style.margin = '2px';
     title.style.color = '#00ff99';
     title.style.cursor = 'default';
     title.style.userSelect = 'none';
@@ -825,7 +802,7 @@ function createFloatingTagPalette(tags = null) {
             separator.style.width = '100%';
             separator.style.height = '1px';
             separator.style.background = '#333';
-            separator.style.margin = '4px 0';
+            separator.style.margin = '4px';
             panel.appendChild(separator);
             return;
         }
@@ -833,9 +810,12 @@ function createFloatingTagPalette(tags = null) {
         tagBox.textContent = `${tag}`;
         tagBox.draggable = true;
         tagBox.dataset.insertTag = tag;
-        tagBox.className = 'WYSIWYG-ignore';
+        tagBox.classList.add('WYSIWYG-tagBox');
+        // tagBox.className = 'WYSIWYG-ignore';
+        tagBox.classList.add('WYSIWYG-ignore');
         tagBox.style.margin = '1px';
-        tagBox.style.padding = '4px 6px';
+        tagBox.style.padding = '3px';
+        tagBox.style.minWidth = '20px';
         tagBox.style.background = '#222';
         tagBox.style.border = '1px solid #333';
         tagBox.style.borderRadius = '4px';
@@ -871,6 +851,7 @@ function makePanelMovable(panel) {
     }
 
     function onMouseUp() {
+        //alert('mouseup');
         isDragging = false;
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
