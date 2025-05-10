@@ -25,10 +25,10 @@
     "linkedom": "^0.18.10",
     "marked": "^15.0.11",
     "monaco-editor": "^0.52.2",
-    "openai": "^4.97.0",
+    "openai": "^4.98.0",
     "parcel": "^2.14.4",
     "postcss": "^8.5.3",
-    "snipsplicer": "^1.0.12"
+    "snipsplicer": "^1.0.13"
   },
   "keywords": [
     "light-mode",

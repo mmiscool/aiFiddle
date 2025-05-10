@@ -39,8 +39,8 @@ importers:
         specifier: ^0.52.2
         version: 0.52.2
       openai:
-        specifier: ^4.97.0
-        version: 4.97.0(ws@8.18.1)(zod@3.24.4)
+        specifier: ^4.98.0
+        version: 4.98.0(ws@8.18.2)(zod@3.24.4)
       parcel:
         specifier: ^2.14.4
         version: 2.14.4(@swc/helpers@0.5.17)(postcss@8.5.3)
@@ -48,8 +48,8 @@ importers:
         specifier: ^8.5.3
         version: 8.5.3
       snipsplicer:
-        specifier: ^1.0.12
-        version: 1.0.12(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+        specifier: ^1.0.13
+        version: 1.0.13(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
     devDependencies:
       '@parcel/core':
         specifier: ^2.14.4
@@ -602,8 +602,8 @@ packages:
   '@types/node-fetch@2.6.12':
     resolution: {integrity: sha512-8nneRWKCg3rMtF69nLQJnOYUcbafYeFSjqkw3jCRLsqkWFlHaoQrr5mXmofFGOx3DKn7UfmBMyov8ySvLRVldA==}
 
-  '@types/node@18.19.97':
-    resolution: {integrity: sha512-4r3Y9EuCJjWduiam85Fo4GBQtneaEuoaBSdiKo+o6qwQUh0JFVBe7cRUK6I6yVzA0S1gBJJfoQx4VtBH4e5ikg==}
+  '@types/node@18.19.100':
+    resolution: {integrity: sha512-ojmMP8SZBKprc3qGrGk8Ujpo80AXkrP7G2tOT4VWr5jlr5DHjsJF+emXJz+Wm0glmy4Js62oKMdZZ6B9Y+tEcA==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -858,8 +858,8 @@ packages:
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
 
-  electron-to-chromium@1.5.150:
-    resolution: {integrity: sha512-rOOkP2ZUMx1yL4fCxXQKDHQ8ZXwisb2OycOQVKHgvB3ZI4CvehOd4y2tfnnLDieJ3Zs1RL1Dlp3cMkyIn7nnXA==}
+  electron-to-chromium@1.5.151:
+    resolution: {integrity: sha512-Rl6uugut2l9sLojjS4H4SAr3A4IgACMLgpuEMPYCVcKydzfyPrn5absNRju38IhQOf/NwjJY8OGWjlteqYeBCA==}
 
   elliptic@6.6.1:
     resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==}
@@ -1351,8 +1351,8 @@ packages:
     resolution: {integrity: sha512-nK28WOo+QIjBkDduTINE4JkF/UJJKyf2EJxvJKfblDpyg0Q+pkOHNTL0Qwy6NP6FhE/EnzV73BxxqcJaXY9anw==}
     engines: {node: '>= 0.4'}
 
-  openai@4.97.0:
-    resolution: {integrity: sha512-LRoiy0zvEf819ZUEJhgfV8PfsE8G5WpQi4AwA1uCV8SKvvtXQkoWUFkepD6plqyJQRghy2+AEPQ07FrJFKHZ9Q==}
+  openai@4.98.0:
+    resolution: {integrity: sha512-TmDKur1WjxxMPQAtLG5sgBSCJmX7ynTsGmewKzoDwl1fRxtbLOsiR0FA/AOAAtYUmP6azal+MYQuOENfdU+7yg==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -1513,8 +1513,8 @@ packages:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
 
-  snipsplicer@1.0.12:
-    resolution: {integrity: sha512-bKlcMC9Kf8yfGTfykoD2R6jCSClDiGqmCAkdu1o689/lypjJHksiW5E7/0raMPYYXx1fUetNorRbZ7rmI8QKFA==}
+  snipsplicer@1.0.13:
+    resolution: {integrity: sha512-MF/fM9OGDwzqLOQj1JXedD1zJZfSb2QvbyMDKDf8XTta43jSRj6LEJgi5RLT9vKOTJ1YxWwQX2w5pkc5B1wVZw==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -1612,8 +1612,8 @@ packages:
     resolution: {integrity: sha512-rEvr90Bck4WZt9HHFC4DJMsjvu7x+r6bImz0/BrbWb7A2djJ8hnZMrWnHo9F8ssv0OMErasDhftrfROTyqSDrw==}
     engines: {node: '>= 0.4'}
 
-  ws@8.18.1:
-    resolution: {integrity: sha512-RKW2aJZMXeMxVpnZ6bck+RswznaxmzdULiBr6KY7XkTnW8uvt0iT9H5DkHUChXrc+uurzwa0rVI16n/Xzjdz1w==}
+  ws@8.18.2:
+    resolution: {integrity: sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -1640,7 +1640,7 @@ snapshots:
 
   '@anthropic-ai/sdk@0.39.0':
     dependencies:
-      '@types/node': 18.19.97
+      '@types/node': 18.19.100
       '@types/node-fetch': 2.6.12
       abort-controller: 3.0.0
       agentkeepalive: 4.6.0
@@ -1661,7 +1661,7 @@ snapshots:
   '@google/genai@0.13.0':
     dependencies:
       google-auth-library: 9.15.1
-      ws: 8.18.1
+      ws: 8.18.2
       zod: 3.24.4
       zod-to-json-schema: 3.24.5(zod@3.24.4)
     transitivePeerDependencies:
@@ -2437,10 +2437,10 @@ snapshots:
 
   '@types/node-fetch@2.6.12':
     dependencies:
-      '@types/node': 18.19.97
+      '@types/node': 18.19.100
       form-data: 4.0.2
 
-  '@types/node@18.19.97':
+  '@types/node@18.19.100':
     dependencies:
       undici-types: 5.26.5
 
@@ -2548,7 +2548,7 @@ snapshots:
   browserslist@4.24.5:
     dependencies:
       caniuse-lite: 1.0.30001717
-      electron-to-chromium: 1.5.150
+      electron-to-chromium: 1.5.151
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.5)
 
@@ -2751,7 +2751,7 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
-  electron-to-chromium@1.5.150: {}
+  electron-to-chromium@1.5.151: {}
 
   elliptic@6.6.1:
     dependencies:
@@ -3239,9 +3239,9 @@ snapshots:
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
-  openai@4.97.0(ws@8.18.1)(zod@3.24.4):
+  openai@4.98.0(ws@8.18.2)(zod@3.24.4):
     dependencies:
-      '@types/node': 18.19.97
+      '@types/node': 18.19.100
       '@types/node-fetch': 2.6.12
       abort-controller: 3.0.0
       agentkeepalive: 4.6.0
@@ -3249,7 +3249,7 @@ snapshots:
       formdata-node: 4.4.1
       node-fetch: 2.7.0
     optionalDependencies:
-      ws: 8.18.1
+      ws: 8.18.2
       zod: 3.24.4
     transitivePeerDependencies:
       - encoding
@@ -3460,7 +3460,7 @@ snapshots:
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
-  snipsplicer@1.0.12(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17):
+  snipsplicer@1.0.13(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17):
     dependencies:
       '@parcel/config-default': 2.14.4(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)(postcss@8.5.3)
       escodegen: 2.1.0
@@ -3575,7 +3575,7 @@ snapshots:
       gopd: 1.2.0
       has-tostringtag: 1.0.2
 
-  ws@8.18.1: {}
+  ws@8.18.2: {}
 
   xtend@4.0.2: {}
 
