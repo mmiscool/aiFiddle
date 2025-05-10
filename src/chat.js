@@ -145,11 +145,13 @@ export class ChatUI extends conversation {
         const message = `${this.messageInput.value}
 
 
-
+\r\n
 Be sure to always follow the explicit merge rules for the snippet language.
 Limit your snippets to the minimum required to comply with the merge rules.\r\n
 For javascript you must always wrap individual methods in the class syntax. Do not add any event listeners outside of a class method or function.
-For HTML you must always use the special tag attributes for locating the element in the dom. Remember to use the special attributes to remove elements or remove attributes from elements.
+For HTML you must always use the special tag attributes for locating the element in the dom. 
+Remember to use the special attributes to remove elements or remove attributes from elements.
+Rember to always make a flat list of tags. the parent child relationships should always be specified in the special attributes.
 For CSS you must always follow the rules related to merging css with the existing css.
         `
         if (message) {
