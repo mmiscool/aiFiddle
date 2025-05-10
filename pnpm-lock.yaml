@@ -48,8 +48,8 @@ importers:
         specifier: ^8.5.3
         version: 8.5.3
       snipsplicer:
-        specifier: ^1.0.13
-        version: 1.0.13(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+        specifier: ^1.0.14
+        version: 1.0.14(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
     devDependencies:
       '@parcel/core':
         specifier: ^2.14.4
@@ -1513,8 +1513,8 @@ packages:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
 
-  snipsplicer@1.0.13:
-    resolution: {integrity: sha512-MF/fM9OGDwzqLOQj1JXedD1zJZfSb2QvbyMDKDf8XTta43jSRj6LEJgi5RLT9vKOTJ1YxWwQX2w5pkc5B1wVZw==}
+  snipsplicer@1.0.14:
+    resolution: {integrity: sha512-sH9Ovq8EXS8jU7IvkCYx8W5ulsXoq1Xf17Qc1SQIxQAOzdUWc4vAO1aIeSdcnB7djIxn6nRQEfI/Skh6jHSiFw==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -3460,7 +3460,7 @@ snapshots:
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
-  snipsplicer@1.0.13(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17):
+  snipsplicer@1.0.14(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17):
     dependencies:
       '@parcel/config-default': 2.14.4(@parcel/core@2.14.4(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)(postcss@8.5.3)
       escodegen: 2.1.0
