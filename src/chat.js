@@ -143,9 +143,14 @@ export class ChatUI extends conversation {
 
     async submitMessageButtonEvent() {
         const message = `${this.messageInput.value}
-Be sure to folow the explicit merge rules for the snippet language. 
-Limit your snippets to the minimum required to comply with the merge rules.
-Do not regenrated the whole pice of code from scratch each time excecpt for CSS. CSS required each chunk to be complete.
+
+
+
+Be sure to always follow the explicit merge rules for the snippet language.
+Limit your snippets to the minimum required to comply with the merge rules.\r\n
+For javascript you must always wrap individual methods in the class syntax. Do not add any event listeners outside of a class method or function.
+For HTML you must always use the special tag attributes for locating the element in the dom. Remember to use the special attributes to remove elements or remove attributes from elements.
+For CSS you must always follow the rules related to merging css with the existing css.
         `
         if (message) {
             await this.updateConversationDynamicContent();
