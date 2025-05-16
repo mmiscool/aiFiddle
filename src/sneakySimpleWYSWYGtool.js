@@ -345,6 +345,39 @@ export class WYSIWYGEditor {
 
             this._addContextMenuItems(el);
 
+            el.addEventListener("keydown", (e) => {
+                const target = e.target;
+                if (!target.isContentEditable) return;
+
+                // Only handle for buttons (or extend to other tags if needed)
+
+                const selection = window.getSelection();
+                if (!selection || selection.rangeCount === 0) return;
+                const range = selection.getRangeAt(0);
+
+                // Helper to insert text
+                const insertText = (text) => {
+                    range.deleteContents();
+                    range.insertNode(document.createTextNode(text));
+                    range.collapse(false);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                };
+
+                // Handle keys
+                if (e.key === " ") {
+                    e.preventDefault();
+                    // non-breaking space
+                    insertText("\u00A0");
+                } else if (e.key === "Tab") {
+                    e.preventDefault();
+                    insertText("    "); // 4 regular spaces (or change to '\t' if you prefer)
+                } else if (e.key === "Enter") {
+                    e.preventDefault();
+                    insertText("\n"); // Or insert a <br> if you prefer HTML-style line breaks
+                }
+
+            });
 
 
             // Right-click context menu
