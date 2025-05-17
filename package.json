@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx parcel src/index.html  ",
     "build": "npx parcel build src/index.html --no-source-maps --public-url .",
-    "deploy": "build:monaco-workers & npx parcel build src/index.html --no-source-maps --public-url .",
+    "deploy": "npm run build:monaco-workers && npx parcel build src/index.html --no-source-maps --public-url .",
     "build:json-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/json/json.worker.js --no-source-maps --log-level error",
     "build:css-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/css/css.worker.js --no-source-maps --log-level error",
     "build:html-worker": "pnpm parcel build node_modules/monaco-editor/esm/vs/language/html/html.worker.js --no-source-maps --log-level error",
@@ -28,7 +28,7 @@
     "openai": "^4.100.0",
     "parcel": "^2.15.1",
     "postcss": "^8.5.3",
-    "snipsplicer": "^1.0.16"
+    "snipsplicer": "^1.0.17"
   },
   "keywords": [
     "light-mode",
