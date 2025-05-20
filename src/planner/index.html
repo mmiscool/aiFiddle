@@ -1,18 +1,37 @@
-<html id="html" lang="en">
-    <head id="head"></head>
-    <body id="body">
-        <div id="container">
-            <h1 id="mainTitle">Project Planner</h1>
-            <div id="requirementsSection">
-                <h2 id="reqTitle">Requirements</h2>
-                <div id="requirementsList"></div>
-                <button id="addRequirementBtn">+</button>
-            </div>
-            <div id="tasksSection">
-                <h2 id="taskTitle">Tasks</h2>
-                <div id="tasksList"></div>
-                <button id="addTaskBtn">+</button>
-            </div>
-        </div>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Requirement & Task Tracker</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <header id="auto-id-8">
+    <h1 id="auto-id-3">
+      <span id="projectName">MyProject</span>
+    </h1>
+    <div id="auto-id-7">
+      <button id="export_project">Export</button>
+      <button id="import_project">Import</button>
+      <button id="copy_markdown">Copy Markdown</button>
+    </div>
+  </header>
+  <div id="auto-id-13" class="main">
+    <div id="requirementsSection" class="section">
+      <h2 id="auto-id-9">Requirements</h2>
+      <div id="requirementsContainer"></div>
+      <div id="requirement_add" class="add-button">+ Add Requirement</div>
+    </div>
+    <div id="tasksSection" class="section">
+      <h2 id="auto-id-11">Tasks</h2>
+      <div id="tasksContainer"></div>
+      <div id="task_add" class="add-button">+ Add Task</div>
+    </div>
+  </div>
+
+  <script type="module" src="./planner.js"></script>
+</body>
+
 </html>
