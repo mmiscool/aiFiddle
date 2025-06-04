@@ -3,7 +3,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 //import system_prompt from "bundle-text:./prompts/system.md"
 import { conversation, writeSetting, listSettings, writeSetting, readSetting, replaceSettingIfNotFound } from "./llmCall.js";
-import { mergeToolsPromptStrings } from 'snipsplicer';
+import { mergeToolsPromptStrings } from 'snipsplicer'; 
 
 const system_prompt = mergeToolsPromptStrings.complete;
 let editorManager = null;

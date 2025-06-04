@@ -1,3 +1,7 @@
+import { ChatUI } from '../chat.js';
+
+
+
 
 export class Item {
     constructor(id, title = '', longDescription = '', children = []) {
@@ -21,9 +25,11 @@ export class Task extends Item {
 export class ProjectManager {
     constructor(projectName) {
         this.projectName = projectName;
-        this.storageKey = `project_${ projectName }`;
+        this.storageKey = `project_${projectName}`;
         this.requirements = [];
         this.tasks = [];
+        this.ChatUI = new ChatUI();
+
         this.load();
     }
     generateId() {
@@ -53,12 +59,12 @@ export class ProjectManager {
     generateMarkdown() {
         const renderItem = (item, type, depth = 0) => {
             const indent = '  '.repeat(depth);
-            let md = `${ indent }- **${ item.title || 'Untitled' }**\n`;
+            let md = `${indent}- **${item.title || 'Untitled'}**\n`;
             if (item.longDescription) {
-                md += `${ indent }  ${ item.longDescription }\n`;
+                md += `${indent}  ${item.longDescription}\n`;
             }
             if (type === 'task') {
-                md += `${ indent }  _Status: ${ item.status }_\n`;
+                md += `${indent}  _Status: ${item.status}_\n`;
             }
             const children = (type === 'requirement' ? this.requirements : this.tasks).filter(child => item.children.includes(child.id));
             for (const child of children) {
