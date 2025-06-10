@@ -113,7 +113,11 @@ export class conversation {
             {
                 name: 'Google Gemini',
                 baseURL: 'https://api.google.com/v1'
-            }
+            },
+            {
+                name: 'OpenRouter',
+                baseURL: 'https://openrouter.ai/api/v1'
+            },
 
         ];
 
